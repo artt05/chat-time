@@ -1,0 +1,125 @@
+<%- include("../layout.ejs"); %>
+<head><style>.container {
+  max-width: 600px;
+  margin: auto;
+}
+
+.chat-box {
+  border: 1px solid #ddd;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.messages {
+  list-style: none;
+  padding: 0;
+}
+
+.messages li {
+  margin: 10px 0;
+}
+
+.sent {
+  text-align: right;
+}
+
+.received {
+  text-align: left;
+}
+
+.message-content {
+  display: inline-block;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+}
+
+.sender {
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.message-form {
+  margin-top: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.btn-primary {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+}</style></head>
+<div class="container">
+  <h1>Chat with <%= user.name %></h1>
+
+  <!-- Display existing messages -->
+  <div class="chat-box">
+    <ul class="messages">
+      <% for (const sentMessage of sentMessages) { %>
+        <li class="sent">
+          <span class="message-content"><%= sentMessage.message %></span>
+        </li>
+      <% } %>
+      <% for (const receivedMessage of receivedMessages) { %>
+        <li class="received">
+          <span class="sender"><%= user.name %>:</span>
+          <span class="message-content"><%= receivedMessage.message %></span>
+        </li>
+      <% } %>
+    </ul>
+  </div>
+
+  <!-- Message input form -->
+  <form action="/users/<%= UserId %>/send-message" method="post" class="message-form">
+    <div class="form-group">
+      <textarea class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Send</button>
+  </form>
+</div>
+<script>
+  const ws = new WebSocket("ws://localhost:8000");
+
+  // Function to send messages via WebSocket
+  function sendMessage(message) {
+    ws.send(JSON.stringify({ senderId: "<%= user._id %>", message }));
+  }
+
+  // Function to handle incoming messages
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+
+    // Render the received message in real-time
+    // ...
+
+    // You might need to update your rendering logic here
+    // (e.g., add the new message to the UI without refreshing)
+  };
+
+  // Function to handle sending a new message
+  function sendNewMessage() {
+    const message = document.getElementById("message").value;
+    sendMessage(message);
+
+    // Clear the input field after sending
+    document.getElementById("message").value = "";
+  }
+
+  // ... other JavaScript code ...
+
+</script>
+
+</body>
+</html>

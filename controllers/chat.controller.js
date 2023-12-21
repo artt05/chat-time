@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const Post = require("../models/post.model");
+const Message = require("../models/message.model");
 
 const ObjectId = require("mongodb").ObjectId;
 const indexView = async (req, res) => {
@@ -26,7 +27,6 @@ const indexView = async (req, res) => {
 const searchView = async (req, res) => {
   try {
     const users = await User.find({ name: { $regex: `^${req.query.name}$` } });
-  
 
     const senderId = req.user._id;
 
@@ -46,6 +46,44 @@ const searchView = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+const sendMessage = async (req, res) => {
+  const { message } = req.body;
+  console.log("message", message);
+  const reciverId = req.params.id;
+  const senderId = req.user._id;
+  console.log("reciverId", reciverId);
+  console.log("senderId", senderId);
+
+  try {
+    const newMessage = new Message({
+      message: message,
+      senderId: senderId,
+      reciverId: reciverId,
+    });
+
+    await newMessage.validate(); // Manually validate the message
+
+    await newMessage.save();
+
+    res.status(200).json({ message: "Message sent successfully!" });
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      // Handle validation errors
+      const validationErrors = Object.keys(error.errors).map((key) => ({
+        field: key,
+        message: error.errors[key].message,
+      }));
+
+      return res
+        .status(400)
+        .json({ error: "Validation failed", validationErrors });
+    }
+
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
+
 const sendRequest = async (req, res) => {
   const userId = req.params.id;
   const senderId = req.user._id;
@@ -70,8 +108,9 @@ const sendRequest = async (req, res) => {
         message: "Friend request sent successfully!",
         isFriendRequestSent: true,
       };
+      const posts = await Post.find({ user: req.user._id });
 
-      res.render("index", { data });
+      res.render("index", { data, user: req.user, posts });
     } else {
       const data = {
         message: "You have already sent a friend request to this user.",
@@ -91,13 +130,38 @@ const friendRequests = async (req, res) => {
       "name",
       "email",
     ]);
+
     res.render("_partial_views/friend-requests", { user });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Something went wrong" });
   }
 };
-
+const chatView = async (req, res) => {
+  try {
+    console.log("req.params.id", req.params.id);
+    console.log("req.user._id", req.user._id);
+    const receivedMessages = await Message.find({
+      reciverId: req.user._id,
+      senderId: req.params.id,
+    });
+    const sentMessages = await Message.find({
+      senderId: req.user._id,
+      reciverId: req.params.id,
+    });
+    const user = await User.findById(req.params.id);
+    const UserId = req.params.id;
+    res.render("_partial_views/chat-view", {
+      user,
+      UserId,
+      sentMessages,
+      receivedMessages,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+};
 const allFriendsView = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate("friends", [
@@ -177,4 +241,6 @@ module.exports = {
   friendRequests,
   allFriendsView,
   rejectRequest,
+  sendMessage,
+  chatView,
 };
