@@ -65,7 +65,7 @@ const sendMessage = async (req, res) => {
 
     await newMessage.save();
 
-    res.status(200).json({ message: "Message sent successfully!" });
+    res.redirect(`/chat/${reciverId}`);
   } catch (error) {
     if (error.name === "ValidationError") {
       // Handle validation errors
@@ -138,9 +138,67 @@ const friendRequests = async (req, res) => {
   }
 };
 const chatView = async (req, res) => {
+  function formatTimestamp(timestamp) {
+    const date = new Date(timestamp);
+    const now = new Date();
+
+    // If it's today, show only the time
+    if (
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return `${date.getHours()}:${
+        (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
+      }`;
+    }
+
+    // If it's not today but this month, show only the day and time
+    if (
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear()
+    ) {
+      return `${date.getDate()} ${date.getHours()}:${
+        (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
+      }`;
+    }
+
+    // If it's not this month but this year, show only the month, day, and time
+    if (date.getFullYear() === now.getFullYear()) {
+      const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      return `${
+        monthNames[date.getMonth()]
+      } ${date.getDate()}, ${date.getHours()}:${
+        (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
+      }`;
+    }
+
+    // If it's not this year, show the full date
+    return `${date.getFullYear()}-${
+      (date.getMonth() + 1 < 10 ? "0" : "") + (date.getMonth() + 1)
+    }-${
+      (date.getDate() < 10 ? "0" : "") + date.getDate()
+    } - ${date.getHours()}:${
+      (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
+    }`;
+  }
+
   try {
     console.log("req.params.id", req.params.id);
-    console.log("req.user._id", req.user._id);
+    console.log("req.user._id", req.user.id);
     const receivedMessages = await Message.find({
       reciverId: req.user._id,
       senderId: req.params.id,
@@ -149,13 +207,27 @@ const chatView = async (req, res) => {
       senderId: req.user._id,
       reciverId: req.params.id,
     });
+    const messages = await Message.find();
+    const sortedMessages = messages
+      .map((message) => ({
+        message: message.message,
+        timestamp: formatTimestamp(message._id.getTimestamp()),
+        senderId: message.senderId,
+        reciverId: message.reciverId,
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
+    // Corrected sorting
     const user = await User.findById(req.params.id);
+    const user1 = req.user.id;
     const UserId = req.params.id;
     res.render("_partial_views/chat-view", {
+      user1,
       user,
       UserId,
       sentMessages,
       receivedMessages,
+      messages,
+      sortedMessages,
     });
   } catch (error) {
     console.error(error);
@@ -189,8 +261,12 @@ const acceptRequest = async (req, res) => {
     }
 
     // Add friend to the friends array of the accepting user
-    user.friends.push(friend._id);
-    await user.save();
+    if (!user.friends.includes(friend._id)) {
+      user.friends.push(friend._id);
+      await user.save();
+    } else {
+      return res.status(404).json({ error: "User already exists" });
+    }
 
     // Remove friend request from the friendRequests array of the accepting user
     user.friendRequests = user.friendRequests.filter(
