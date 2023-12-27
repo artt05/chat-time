@@ -39,6 +39,7 @@
       background-color: #f1f1f1;
       position: relative;
       max-width: 50%; /* Set max-width to 50% */
+      word-wrap: break-word;
     }
   
     .receiver {
@@ -58,18 +59,38 @@
       padding: 5px;
       display: inline-block;
     }
-  
-    .right-hr {
+    .sent .left-hr {
+    margin-right: 5px; /* Adjust this margin as needed */
+  }
+
+  .received .right-hr {
+    margin-left: 5px; /* Adjust this margin as needed */
+  }
+
+  .left-hr, .right-hr {
+    position: absolute;
+    bottom: 5px; /* Adjust the distance from the text */
+    height: 1px; /* Set the height of the hr */
+    background-color: #ccc; /* Set the color of the hr */
+  }
+    /* .right-hr {
       position: absolute;
       width: 80%;
       left: 100px;
     }
-  
+    .sent .left-hr {
+  margin-right: 5px; /* Adjust this margin as needed */
+/* } */
+
+.received .right-hr {
+  margin-left: 5px; /* Adjust this margin as needed */
+}
     .left-hr {
       position: absolute;
       width: 80%;
       left: 5px;
-    }
+      
+    } */
   
     .timestamp {
       display: none;
@@ -125,31 +146,65 @@
       return `${date.getHours()}:${
         (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
       }`;
+      document.addEventListener('DOMContentLoaded', function () {
+    const chatBox = document.getElementById('chatBox');
+    const hrElements = document.querySelectorAll('.left-hr, .right-hr');
+
+    // Function to dynamically set the hr width based on the message length
+    function adjustHrWidth() {
+      hrElements.forEach(hr => {
+        const messageContent = hr.nextElementSibling;
+        const messageWidth = messageContent.clientWidth;
+        hr.style.width = `${messageWidth}px`;
+      });
+    }
+
+    // Check if the page is refreshed
+    if (performance.navigation.type === 1) {
+      chatBox.scrollTop = chatBox.scrollHeight;
+    } else {
+      chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+    }
+
+    // Adjust hr width on window resize
+    window.addEventListener('resize', adjustHrWidth);
+    
+    // Initial adjustment
+    adjustHrWidth();
+  });
     }</script>
     <!-- Display existing messages -->
-    <div class="chat-box">
+    <div class="chat-box" id="chatBox">
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const chatBox = document.getElementById('chatBox');
+    
+          // Check if the page is refreshed
+          if (performance.navigation.type === 1) {
+            chatBox.scrollTop = chatBox.scrollHeight;
+          } else {
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+          }
+        });
+      </script>
       <ul class="messages">
         <% for (const sentMessage of sortedMessages) { %>
           <% if (sentMessage.senderId == user1 && sentMessage.reciverId == UserId) { %>
             <li class="sent">
               <span class="receiver-right"><%= sentMessage.timestamp %>:</span>
-              <hr class="left-hr">
+              <!-- <hr class="left-hr"> -->
               <span class="sender">Me:</span>
               <span class="message-content">
-                
                 <%= sentMessage.message %>
-             
               </span>
             </li>
           <% } else if (sentMessage.senderId == UserId && sentMessage.reciverId == user1) { %>
             <li class="received">
               <span class="receiver"><%= sentMessage.timestamp %>:</span>
-              <hr class="right-hr">
+              <!-- <hr class="right-hr"> -->
               <span class="sender"><%= user.name %>:</span>
               <span class="message-content">
-              
                 <%= sentMessage.message %>
-               
               </span>
             </li>
           <% } %>

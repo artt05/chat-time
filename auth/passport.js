@@ -5,7 +5,7 @@ LocalStrategy = require("passport-local").Strategy;
 
 const User = require("../models/user.model");
 
-const loginCheck = passport => {
+const loginCheck = (passport) => {
   passport.use(
     new LocalStrategy({ usernameField: "email" }, (email, password, done) => {
       //Check customer

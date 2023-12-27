@@ -6,6 +6,10 @@ const {
   registerUser,
   loginUser,
   logoutUser,
+  safewordView,
+  emailView,
+  emailCheck,
+  check,
 } = require("../controllers/auth.controller");
 
 const { allowIf } = require("../auth/protect");
@@ -15,6 +19,10 @@ const router = express.Router();
 router.get("/register", allowIf, registerView);
 router.get("/login", allowIf, loginView);
 router.get("/logout", logoutUser);
+
+router.get("/email-view", allowIf, emailView);
+router.post("/email-check", allowIf, emailCheck);
+router.post("/check", allowIf, check);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);

@@ -123,6 +123,10 @@ const sendRequest = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+const scrollToBottom = () => {
+  const chat = document.querySelector(".chat");
+  chat.scrollTop = chat.scrollHeight;
+};
 
 const friendRequests = async (req, res) => {
   try {
@@ -319,4 +323,5 @@ module.exports = {
   rejectRequest,
   sendMessage,
   chatView,
+  scrollToBottom,
 };
