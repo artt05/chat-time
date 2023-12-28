@@ -21,6 +21,7 @@
       </div>
       <div>
         <a href="/logout"> <button type="submit" class="btn btn-primary login-button">Logout</button> </a>
+         <button onclick="confirmAndCallFunction()"  class="btn btn-danger login-button">Delete Account </button>
       </div>
 </div>
 
@@ -70,6 +71,18 @@
         });
       });
     });
+  </script>
+  <script>
+    function confirmAndCallFunction() 
+    {
+      const userConfirmed = window.confirm("Are you sure you want to delete your account?");
+      
+      if (userConfirmed) {
+        window.location.href = "/deleteAccount";
+      }else {
+        window.location.href = "/index";
+      }
+    }
   </script>
 </body>
 </html>

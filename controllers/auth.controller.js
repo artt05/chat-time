@@ -58,19 +58,23 @@ const registerUser = (req, res) => {
           bcrypt.hash(newUser.password, salt, (err, hash) => {
             if (err) throw err;
 
-            newUser.password = hash;
-            newUser
-              .save()
+            bcrypt.hash(newUser.safeword, salt, (err, hash1) => {
+              if (err) throw err;
+              newUser.safeword = hash1;
+              newUser.password = hash;
+              newUser
+                .save()
 
-              .then((user) => {
-                req.login(user, function (err) {
-                  if (err) {
-                    console.log(err);
-                  }
-                  return res.redirect("/index");
-                });
-              })
-              .catch((err) => console.log(err));
+                .then((user) => {
+                  req.login(user, function (err) {
+                    if (err) {
+                      console.log(err);
+                    }
+                    return res.redirect("/index");
+                  });
+                })
+                .catch((err) => console.log(err));
+            });
           })
         );
       }
@@ -104,6 +108,7 @@ const check = async (req, res) => {
   const id = req.params.id;
   console.log(safeword + " " + id);
   const user = await User.findOne({ id: id });
+  const email = user.email;
   console.log(user.safeword);
   if (!safeword) {
     res.redirect(
@@ -121,10 +126,29 @@ const check = async (req, res) => {
         encodeURIComponent("danger")
     );
   } else {
-    console.log("safeword is correct", id);
-
     res.redirect(`/changepassword-view/${id}`);
+    // passport.authenticate("local", {
+    //   successRedirect: `/changepassword-view/${id}`,
+    //   failureRedirect:
+    //     `/safeword-view/${id}?error=` +
+    //     encodeURIComponent("Wrong safeword") +
+    //     `&color=` +
+    //     encodeURIComponent("danger"),
+    //   // failureFlash: true,
+    // })(req, res);
+    // console.log("skiqka" + id);
   }
+};
+const deleteAccount = async (req, res) => {
+  const id = req.user._id;
+  User.findByIdAndDelete(id, (err, docs) => {
+    res.redirect(
+      `/login?error=` +
+        encodeURIComponent("The account was deleted successfuly.") +
+        `&color=` +
+        encodeURIComponent("success")
+    );
+  });
 };
 //Logging in Function
 const emailView = (req, res) => {
@@ -255,4 +279,5 @@ module.exports = {
   emailCheck,
   changePasswordView,
   safewordView,
+  deleteAccount,
 };

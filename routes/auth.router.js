@@ -12,6 +12,7 @@ const {
   changePassword,
   changePasswordView,
   safewordView,
+  deleteAccount,
 } = require("../controllers/auth.controller");
 
 const { allowIf } = require("../auth/protect");
@@ -21,6 +22,7 @@ const router = express.Router();
 router.get("/register", allowIf, registerView);
 router.get("/login", allowIf, loginView);
 router.get("/logout", logoutUser);
+router.get("/deleteAccount", deleteAccount);
 
 router.get("/email-view", allowIf, emailView);
 router.post("/email-check", allowIf, emailCheck);
