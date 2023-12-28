@@ -127,16 +127,6 @@ const check = async (req, res) => {
     );
   } else {
     res.redirect(`/changepassword-view/${id}`);
-    // passport.authenticate("local", {
-    //   successRedirect: `/changepassword-view/${id}`,
-    //   failureRedirect:
-    //     `/safeword-view/${id}?error=` +
-    //     encodeURIComponent("Wrong safeword") +
-    //     `&color=` +
-    //     encodeURIComponent("danger"),
-    //   // failureFlash: true,
-    // })(req, res);
-    // console.log("skiqka" + id);
   }
 };
 const deleteAccount = async (req, res) => {
