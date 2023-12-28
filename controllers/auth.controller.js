@@ -14,24 +14,35 @@ const registerUser = (req, res) => {
   console.log(safeword);
   if (!name || !email || !password || !confirm || !safeword) {
     console.log("Fill empty fields");
+    res.redirect(
+      `/register?error=` +
+        encodeURIComponent("Fill empty fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
   }
 
   //Confirm Passwords
 
   if (password !== confirm) {
     console.log("Password must match");
+    res.redirect(
+      `/register?error=` +
+        encodeURIComponent("Password must match") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
   } else {
     //Validation
     User.findOne({ email: email }).then((user) => {
       if (user) {
         console.log("email exists");
-        res.render("register", {
-          name,
-          email,
-          password,
-          confirm,
-          safeword,
-        });
+        res.redirect(
+          `/register?error=` +
+            encodeURIComponent("Email already exists") +
+            `&color=` +
+            encodeURIComponent("danger")
+        );
       } else {
         //Validation
         const newUser = new User({
@@ -83,17 +94,36 @@ const loginView = (req, res) => {
 //     res.render("safeword-view", { email });
 //   }
 // };
+const changePasswordView = (req, res) => {
+  const id = req.params.id;
+  console.log("mrriti" + id);
+  res.render("changepassword-view", { id });
+};
 const check = async (req, res) => {
-  const { email, safeword } = req.body;
-  const user = User.findOne({ email: email });
-  console.log(req.body);
-  if (user.safeword !== safeword) {
+  const { safeword } = req.body;
+  const id = req.params.id;
+  console.log(safeword + " " + id);
+  const user = await User.findOne({ id: id });
+  console.log(user.safeword);
+  if (!safeword) {
+    res.redirect(
+      `/safeword-view/${id}?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  } else if (user.safeword !== safeword) {
     console.log("Please fill in all the fields");
-    res.render("login", {
-      email,
-    });
+    res.redirect(
+      `/safeword-view/${id}?error=` +
+        encodeURIComponent("Wrong safeword, please try again") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
   } else {
-    res.render("changepassword-check", { email });
+    console.log("safeword is correct", id);
+
+    res.redirect(`/changepassword-view/${id}`);
   }
 };
 //Logging in Function
@@ -110,17 +140,78 @@ const emailView = (req, res) => {
   res.render("email-view");
 };
 // };
-const emailCheck = (req, res) => {
-  const { email } = req.body;
-  const user = User.findOne({ email: email });
-  console.log(req.body);
-  if (!email && !user) {
-    console.log("Please fill in all the fields");
-    res.render("login", {
-      email,
-    });
+const changePassword = async (req, res) => {
+  let { password, confirm } = req.body;
+  const id = req.params.id;
+  if (!password || !confirm) {
+    res.redirect(
+      `/changepassword-view/${id}?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  } else if (password !== confirm) {
+    console.log("Password must match");
+    res.redirect(
+      `/changepassword-view/${id}?error=` +
+        encodeURIComponent("Password must match") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
   } else {
-    res.render("safeword-view", { email });
+    console.log("id", id);
+    console.log("password", password);
+    bcrypt.genSalt(10, async (err, salt) =>
+      bcrypt.hash(password, salt, async (err, hash) => {
+        if (err) throw err;
+
+        password = hash;
+
+        console.log("password", password);
+        const user = await User.findByIdAndUpdate(id, {
+          password,
+        });
+
+        console.log(user.email);
+        console.log("sfsfsf");
+        res.redirect(
+          `/login?error=` +
+            encodeURIComponent("Password was changed sccsessfuly!") +
+            `&color=` +
+            encodeURIComponent("success")
+        );
+      })
+    );
+  }
+};
+const safewordView = (req, res) => {
+  const id = req.params.id;
+  res.render("safeword-view", { id });
+};
+const emailCheck = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email: email });
+  console.log(email, user);
+  if (!email) {
+    console.log("Please fill in all the fields");
+    res.redirect(
+      `/email-view?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  } else if (!user) {
+    console.log("email does not exist");
+    res.redirect(
+      `/email-view?error=` +
+        encodeURIComponent("Email does not exist") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  } else {
+    const id = user._id;
+    console.log("id", user._id, email);
+    res.redirect(`safeword-view/${id}`);
   }
 };
 const loginUser = (req, res) => {
@@ -129,14 +220,20 @@ const loginUser = (req, res) => {
   //Required
   if (!email || !password) {
     console.log("Please fill in all the fields");
-    res.render("login", {
-      email,
-      password,
-    });
+    res.redirect(
+      `/login?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
   } else {
     passport.authenticate("local", {
       successRedirect: "/index",
-      failureRedirect: "/login",
+      failureRedirect:
+        `/login?error=` +
+        encodeURIComponent("Wrong email or password") +
+        `&color=` +
+        encodeURIComponent("danger"),
       failureFlash: true,
     })(req, res);
   }
@@ -152,8 +249,10 @@ module.exports = {
   registerUser,
   loginUser,
   logoutUser,
-
+  changePassword,
   emailView,
   check,
   emailCheck,
+  changePasswordView,
+  safewordView,
 };

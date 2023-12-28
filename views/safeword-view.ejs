@@ -7,11 +7,11 @@
                             <div class="card-header">Safe Word Check</div>
                             <div class="card-body">
 
-                                <form class="form-horizontal" method="post" action="/check">
+                                <form class="form-horizontal" method="post" action="/check/<%= id %>">
 
                                 
                                     <div class="form-group">
-                                        <label for="email" class="cols-sm-2 control-label">Your Safe Word</label>
+                                        <label for="safeword" class="cols-sm-2 control-label">Your Safe Word</label>
                                         <div class="cols-sm-10">
                                             <div class="input-group">
                                                 <span class="input-group-addon"><i class="fa fa-envelope fa" aria-hidden="true"></i></span>
@@ -33,6 +33,8 @@
                     </div>
                 </div>
 </div>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 
+<%- include('alert.ejs'); %>
 </body>
 </html>

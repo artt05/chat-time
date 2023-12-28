@@ -1,0 +1,13 @@
+<script>
+  $("#loginAlert").hide();
+  const urlParams = new URLSearchParams(window.location.search);
+  const myParam = urlParams.get("error");
+  const myParam2 = urlParams.get("color");
+
+  if (myParam && myParam2) {
+    // Set the text content of the <p> element to the value of myParam
+    $("#loginAlert").addClass("alert alert-" + myParam2);
+    $("#loginAlert p").text(myParam);
+    $("#loginAlert").show();
+  }
+</script>

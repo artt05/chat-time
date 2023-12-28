@@ -6,10 +6,12 @@ const {
   registerUser,
   loginUser,
   logoutUser,
-  safewordView,
   emailView,
   emailCheck,
   check,
+  changePassword,
+  changePasswordView,
+  safewordView,
 } = require("../controllers/auth.controller");
 
 const { allowIf } = require("../auth/protect");
@@ -22,7 +24,10 @@ router.get("/logout", logoutUser);
 
 router.get("/email-view", allowIf, emailView);
 router.post("/email-check", allowIf, emailCheck);
-router.post("/check", allowIf, check);
+router.post("/check/:id", allowIf, check);
+router.get("/safeword-view/:id", safewordView);
+router.post("/change-password/:id", changePassword);
+router.get("/changepassword-view/:id", changePasswordView);
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);
