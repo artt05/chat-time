@@ -176,14 +176,14 @@
     <!-- Display existing messages -->
     <div class="chat-box" id="chatBox">
       <script>
-        document.addEventListener('DOMContentLoaded', function () {
+         document.addEventListener('DOMContentLoaded', function () {
           const chatBox = document.getElementById('chatBox');
     
           // Check if the page is refreshed
           if (performance.navigation.type === 1) {
             chatBox.scrollTop = chatBox.scrollHeight;
           } else {
-            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
+            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'auto' });
           }
         });
       </script>
@@ -215,11 +215,41 @@
     <!-- Message input form -->
     <form action="/users/<%= UserId %>/send-message" method="post" class="message-form">
       <div class="form-group">
-        <textarea class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></textarea>
+        <input class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></input>
       </div>
       <button type="submit" class="btn btn-primary">Send</button>
     </form>
   </div>
   <!-- ... WebSocket script ... -->
+    <script>
+      const ws = new WebSocket({server});
+
+      ws.addEventListener("message", function (event) { 
+        const data = JSON.parse(event.data);
+
+        if (data.type  === "message"){
+          addMessage(data.data); 
+        }
+      });
+
+      function sendMessage() {
+        const message = document.getElementById("message").value;
+
+        if (!message) return false;
+
+        ws.send(JSON.stringify({ type: "message", data: message }));
+
+        addMessage(message);
+        document.getElementById("message").value = "";
+      }
+
+      function addMessage(message) {
+        const chatBox = document.getElementById("chatBox");
+        const li = document.createElement("li");
+        li.innerText = message;
+        chatBox.appendChild(li);
+      }
+
+    </script>
 </body>
 </html>

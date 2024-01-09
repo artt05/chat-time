@@ -2,16 +2,19 @@ const express = require("express");
 const fs = require("fs");
 const socket = require("socket.io");
 const https = require("https");
-const app = express();
+const server = express();
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-const WebSocket = require("ws");
+
 const session = require("express-session");
 const cookieSession = require("cookie-session");
 dotenv.config();
 const passport = require("passport");
 const { loginCheck } = require("./auth/passport");
 const User = require("./models/user.model");
+const WebSocket = require("ws");
+const wss = new WebSocket.Server({ server });
+//
 // const wss = new WebSocket.Server({ server });
 loginCheck(passport);
 const config = {
@@ -30,8 +33,8 @@ mongoose
   .then(() => console.log("Database connected successfully"))
   .catch((err) => console.log(err));
 
-app.use(express.static("public"));
-app.set("view engine", "ejs");
+server.use(express.static("public"));
+server.set("view engine", "ejs");
 
 // wss.on("connection", (ws) => {
 //   // Handle new WebSocket connections
@@ -44,9 +47,9 @@ app.set("view engine", "ejs");
 //     });
 //   });
 // });
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json()); // Add this line to parse JSON bodies
-app.use(
+server.use(express.urlencoded({ extended: false }));
+server.use(express.json()); // Add this line to parse JSON bodies
+server.use(
   cookieSession({
     name: "session1",
     // saveUninitialized: true,
@@ -56,16 +59,33 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
+server.use(passport.initialize());
+server.use(passport.session());
 
 //Routes
-app.use("/", require("./routes/auth.router"));
-app.use("/", require("./routes/chat.route"));
-app.use("/", require("./routes/post.router"));
-app.get("/*", (req, res) => {
+server.use("/", require("./routes/auth.router"));
+server.use("/", require("./routes/chat.route"));
+server.use("/", require("./routes/post.router"));
+server.get("/*", (req, res) => {
   res.redirect("/index");
 });
 const PORT = process.env.PORT;
+console.log({ server });
+server.listen(PORT, console.log("Server has started at port " + PORT));
+wss.on("connection", function connection(ws) {
+  ws.on("message", function incoming(message) {
+    const data = JSON.parse(message);
+    if (data.type === "message") {
+      wss.clients.forEach((client) => {
+        if (client !== ws && client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: "message", data: data.data }));
+        }
+      });
+    }
+  });
+});
 
-app.listen(PORT, console.log("Server has started at port " + PORT));
+// wss.addEventListener("close", (event) => {
+//   console.log("WebSocket closed. Reconnecting...");
+//   // Reconnect logic goes here
+// });
