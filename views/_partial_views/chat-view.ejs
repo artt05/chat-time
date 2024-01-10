@@ -135,58 +135,51 @@
       border-radius: 5px;
     }
   </style>
-  
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js" integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU" crossorigin="anonymous"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const socket = io("/messages");
+      const chatBox = document.getElementById('chatBox');
+      const messageForm = document.getElementById('messageForm');
+      const messageInput = document.getElementById('message');
+
+      // Listen for incoming messages
+      socket.on('message', function (data) {
+        const li = document.createElement('li');
+        li.innerHTML = `<span class="sender">${data.sender}</span> <span class="receiver">${data.timestamp}</span> <span class="message-content">${data.message}</span>`;
+        chatBox.appendChild(li);
+
+        // Scroll to the bottom of the chat box
+        chatBox.scrollTop = chatBox.scrollHeight;
+      });
+
+      // Handle form submission
+      messageForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+
+        if (message !== '') {
+          // Emit the message to the server
+          socket.emit('message', { userId: '<%= UserId %>', message });
+
+          // Clear the message input field
+          messageInput.value = '';
+        }
+      });
+    });
+  </script>
 </head>
  
  <body>
+  <script src="https://cdn.socket.io/4.0.1/socket.io.min.js" integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU" crossorigin="anonymous"></script>
+
   <div class="container">
     <h1>Chat with <%= user.name %></h1>
-    <script>function formatTimestamp(timestamp) {
-      const date = new Date(timestamp);
-      return `${date.getHours()}:${
-        (date.getMinutes() < 10 ? "0" : "") + date.getMinutes()
-      }`;
-      document.addEventListener('DOMContentLoaded', function () {
-    const chatBox = document.getElementById('chatBox');
-    const hrElements = document.querySelectorAll('.left-hr, .right-hr');
-
-    // Function to dynamically set the hr width based on the message length
-    function adjustHrWidth() {
-      hrElements.forEach(hr => {
-        const messageContent = hr.nextElementSibling;
-        const messageWidth = messageContent.clientWidth;
-        hr.style.width = `${messageWidth}px`;
-      });
-    }
-
-    // Check if the page is refreshed
-    if (performance.navigation.type === 1) {
-      chatBox.scrollTop = chatBox.scrollHeight;
-    } else {
-      chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'smooth' });
-    }
-
-    // Adjust hr width on window resize
-    window.addEventListener('resize', adjustHrWidth);
     
-    // Initial adjustment
-    adjustHrWidth();
-  });
-    }</script>
     <!-- Display existing messages -->
     <div class="chat-box" id="chatBox">
-      <script>
-         document.addEventListener('DOMContentLoaded', function () {
-          const chatBox = document.getElementById('chatBox');
-    
-          // Check if the page is refreshed
-          if (performance.navigation.type === 1) {
-            chatBox.scrollTop = chatBox.scrollHeight;
-          } else {
-            chatBox.scrollTo({ top: chatBox.scrollHeight, behavior: 'auto' });
-          }
-        });
-      </script>
+      
       <ul class="messages">
         <% for (const sentMessage of sortedMessages) { %>
           <% if (sentMessage.senderId == user1 && sentMessage.reciverId == UserId) { %>
@@ -221,35 +214,6 @@
     </form>
   </div>
   <!-- ... WebSocket script ... -->
-    <script>
-      const ws = new WebSocket({server});
-
-      ws.addEventListener("message", function (event) { 
-        const data = JSON.parse(event.data);
-
-        if (data.type  === "message"){
-          addMessage(data.data); 
-        }
-      });
-
-      function sendMessage() {
-        const message = document.getElementById("message").value;
-
-        if (!message) return false;
-
-        ws.send(JSON.stringify({ type: "message", data: message }));
-
-        addMessage(message);
-        document.getElementById("message").value = "";
-      }
-
-      function addMessage(message) {
-        const chatBox = document.getElementById("chatBox");
-        const li = document.createElement("li");
-        li.innerText = message;
-        chatBox.appendChild(li);
-      }
-
-    </script>
+ 
 </body>
 </html>
