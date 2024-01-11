@@ -137,38 +137,62 @@
   </style>
   <script src="https://cdn.socket.io/4.0.1/socket.io.min.js" integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU" crossorigin="anonymous"></script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const socket = io("/messages");
-      const chatBox = document.getElementById('chatBox');
-      const messageForm = document.getElementById('messageForm');
-      const messageInput = document.getElementById('message');
+  
+<script>
+ // Update the form ID to "messagesForm"
+const messageForm = document.getElementById('messagesForm');
 
-      // Listen for incoming messages
-      socket.on('message', function (data) {
-        const li = document.createElement('li');
-        li.innerHTML = `<span class="sender">${data.sender}</span> <span class="receiver">${data.timestamp}</span> <span class="message-content">${data.message}</span>`;
-        chatBox.appendChild(li);
+document.addEventListener('DOMContentLoaded', function () {
+  const socket = io("/messages");
+  const chatBox = document.getElementById('chatBox');
+  const messageInput = document.getElementById('message');
 
-        // Scroll to the bottom of the chat box
-        chatBox.scrollTop = chatBox.scrollHeight;
-      });
+  // Listen for join event
+  socket.on('join', function (data) {
+    console.log(data);
+  });
 
-      // Handle form submission
-      messageForm.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const message = messageInput.value.trim();
+  // Listen for incoming messages
+  socket.on('message', function (data) {
+    console.log("art");
+    const li = document.createElement('li');
+    const messageType = data.senderId === '<%= UserId %>' ? 'sent' : 'received';
 
-        if (message !== '') {
-          // Emit the message to the server
-          socket.emit('message', { userId: '<%= UserId %>', message });
+    li.className = messageType;
+    li.innerHTML = `
+      <span class="receiver">${data.timestamp}</span>
+      <span class="sender">${messageType === 'sent' ? 'Me' : '<%= user.name %>'}:</span>
+      <span class="message-content">${data.message}</span>`;
 
-          // Clear the message input field
-          messageInput.value = '';
-        }
-      });
-    });
-  </script>
+    chatBox.appendChild(li);
+
+    // Scroll to the bottom of the chat box
+    
+  });
+chatBox.scrollTop = chatBox.scrollHeight;
+  // Listen for typing event
+  socket.on('typing', function (data) {
+    // Handle the typing event (display typing indicator, etc.)
+    console.log(`${data.senderId} is ${data.isTyping ? 'typing' : 'not typing'}`);
+  });
+
+  // Handle form submission
+  messageForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const message = messageInput.value.trim();
+
+    if (message !== '') {
+      // Emit the message to the server
+      socket.emit('message', { userId: '<%= UserId %>', senderId: '<%= user1 %>', message });
+
+      // Clear the message input field
+      messageInput.value = '';
+    }
+  });
+});
+
+</script>
+
 </head>
  
  <body>
@@ -206,7 +230,7 @@
     </div>
 
     <!-- Message input form -->
-    <form action="/users/<%= UserId %>/send-message" method="post" class="message-form">
+    <form action="/users/<%= UserId %>/send-message" method="post" id="messagesForm" class="message-form">
       <div class="form-group">
         <input class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></input>
       </div>
