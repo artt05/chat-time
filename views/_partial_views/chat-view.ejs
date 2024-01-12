@@ -26,10 +26,12 @@
   
     .sent {
       text-align: right;
+      list-style: none
     }
   
     .received {
       text-align: left;
+      list-style: none;
     }
   
     .message-content {
@@ -40,6 +42,7 @@
       position: relative;
       max-width: 50%; /* Set max-width to 50% */
       word-wrap: break-word;
+
     }
   
     .receiver {
@@ -49,6 +52,7 @@
       left: 5px;
       padding: 5px;
       display: inline-block;
+      list-style: none;
     }
   
     .receiver-right {
@@ -58,6 +62,7 @@
       left: 5px;
       padding: 5px;
       display: inline-block;
+      list-style: none;
     }
     .sent .left-hr {
     margin-right: 5px; /* Adjust this margin as needed */
@@ -160,12 +165,12 @@ document.addEventListener('DOMContentLoaded', function () {
   // Listen for incoming messages
   socket.on('message', function (data) {
     console.log("art");
-
+    const typingIndicator = document.getElementById('typing');
     const li = document.createElement('li');
     const messageType = data.senderId === '<%= user1 %>' ? 'sent' : 'received';
     console.log(data);
     console.log('<%=UserId %>', '<%= user1 %>');
-   
+   typingIndicator.remove();
     
     li.className = messageType;
     li.innerHTML = `
@@ -183,17 +188,24 @@ document.addEventListener('DOMContentLoaded', function () {
     // Handle the typing event (display typing indicator, etc.)
     console.log("typing",data.senderId);
     const li = document.createElement('li');
-    if(data.senderId == '<%= UserId %>'){
+    const typingIndicator = document.getElementById('typing');
+    chatBox
+    console.log(data.isTyping);
+    if(data.senderId == '<%= UserId %>' && data.isTyping == true){
 
-    li.className = 'received';
-    li.innerHTML = `
-      <span class="reciever">${data.senderId}:</span>
-      <span class="message-content">Typing...</span>`;
-
+      li.className = "received";
+      li.innerHTML = `
+      <span class="message-content" id="typing">Typing...</span>
+      `;
       chatBox.appendChild(li);
-    }
-
-  });
+      
+  }else {
+    typingIndicator.remove();
+    console.log("removed");
+  }
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+  // Scroll to the bottom of the chat box
 chatBox.scrollTop = chatBox.scrollHeight;
   // Listen for typing event
   socket.on('typing', function (data) {
@@ -204,9 +216,11 @@ chatBox.scrollTop = chatBox.scrollHeight;
   // Handle form submission
   messageForm.addEventListener('submit', function (e) {
     e.preventDefault();
+   
     const message = messageInput.value.trim();
 
     if (message !== '') {
+      
       // Emit the message to the server
       socket.emit('message', { userId: '<%= UserId %>', senderId: '<%= user1 %>', message });
 
@@ -255,6 +269,7 @@ chatBox.scrollTop = chatBox.scrollHeight;
     <div class="chat-box" id="chatBox">
       
       <ul class="messages">
+      
         <% for (const sentMessage of sortedMessages) { %>
           <% if (sentMessage.senderId == user1 && sentMessage.reciverId == UserId) { %>
             <li class="sent">
@@ -265,10 +280,11 @@ chatBox.scrollTop = chatBox.scrollHeight;
                 <%= sentMessage.message %>
               </span>
             </li>
+         
           <% } else if (sentMessage.senderId == UserId && sentMessage.reciverId == user1) { %>
             <li class="received">
               <span class="receiver"><%= sentMessage.timestamp %>:</span>
-              <span class ="message-content" hidden="true">Typing...</span>
+              <span class ="message-content" style ="display: none;">Typing...</span>
               <!-- <hr class="right-hr"> -->
               <span class="sender"><%= user.name %>:</span>
               <span class="message-content">
@@ -277,6 +293,7 @@ chatBox.scrollTop = chatBox.scrollHeight;
             </li>
           <% } %>
         <% } %>
+       
       </ul>
     </div>
 
