@@ -140,9 +140,11 @@
   
 <script>
  // Update the form ID to "messagesForm"
-const messageForm = document.getElementById('messagesForm');
+
 
 document.addEventListener('DOMContentLoaded', function () {
+  const messageForm = document.getElementById('messagesForm');
+  
   const socket = io("/messages");
   const chatBox = document.getElementById('chatBox');
   const messageInput = document.getElementById('message');
@@ -151,15 +153,23 @@ document.addEventListener('DOMContentLoaded', function () {
   socket.on('join', function (data) {
     console.log(data);
   });
-
+  function loadReady() {
+    socket.emit("ready", { userId: '<%= UserId %>', senderId: '<%= user1 %>'});
+  }
+  loadReady();
   // Listen for incoming messages
   socket.on('message', function (data) {
     console.log("art");
-    const li = document.createElement('li');
-    const messageType = data.senderId === '<%= UserId %>' ? 'sent' : 'received';
 
+    const li = document.createElement('li');
+    const messageType = data.senderId === '<%= user1 %>' ? 'sent' : 'received';
+    console.log(data);
+    console.log('<%=UserId %>', '<%= user1 %>');
+   
+    
     li.className = messageType;
     li.innerHTML = `
+    
       <span class="receiver">${data.timestamp}</span>
       <span class="sender">${messageType === 'sent' ? 'Me' : '<%= user.name %>'}:</span>
       <span class="message-content">${data.message}</span>`;
@@ -167,7 +177,22 @@ document.addEventListener('DOMContentLoaded', function () {
     chatBox.appendChild(li);
 
     // Scroll to the bottom of the chat box
-    
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+  socket.on('typing', function (data) {
+    // Handle the typing event (display typing indicator, etc.)
+    console.log("typing",data.senderId);
+    const li = document.createElement('li');
+    if(data.senderId == '<%= UserId %>'){
+
+    li.className = 'received';
+    li.innerHTML = `
+      <span class="reciever">${data.senderId}:</span>
+      <span class="message-content">Typing...</span>`;
+
+      chatBox.appendChild(li);
+    }
+
   });
 chatBox.scrollTop = chatBox.scrollHeight;
   // Listen for typing event
@@ -187,8 +212,33 @@ chatBox.scrollTop = chatBox.scrollHeight;
 
       // Clear the message input field
       messageInput.value = '';
+
+      // Make an AJAX request to handle the server-side action
+      fetch('/users/<%= UserId %>/send-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ message }), // Adjust the payload as needed
+      })
+        .then(response => response.json())
+        .then(data => {
+          // Handle the server's response if needed
+          console.log('Server response:', data);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
     }
   });
+  messageInput.addEventListener('input', function () {
+    const isTyping = messageInput.value.trim() !== '';
+
+    // Emit the typing event to the server
+    socket.emit('typing', { senderId: '<%= user1 %>', isTyping });
+  });
+
+
 });
 
 </script>
@@ -218,6 +268,7 @@ chatBox.scrollTop = chatBox.scrollHeight;
           <% } else if (sentMessage.senderId == UserId && sentMessage.reciverId == user1) { %>
             <li class="received">
               <span class="receiver"><%= sentMessage.timestamp %>:</span>
+              <span class ="message-content" hidden="true">Typing...</span>
               <!-- <hr class="right-hr"> -->
               <span class="sender"><%= user.name %>:</span>
               <span class="message-content">
