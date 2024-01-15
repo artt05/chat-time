@@ -166,20 +166,24 @@ document.addEventListener('DOMContentLoaded', function () {
   socket.on('message', function (data) {
     console.log("art");
     const typingIndicator = document.getElementById('typing');
+    const ul = document.querySelector('.messages');
     const li = document.createElement('li');
+    const currentTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const messageType = data.senderId === '<%= user1 %>' ? 'sent' : 'received';
+    console.log(messageType);
+    timestampType = messageType === 'sent' ? 'receiver-right' : 'receiver';
     console.log(data);
     console.log('<%=UserId %>', '<%= user1 %>');
-   typingIndicator.remove();
+   typingIndicator.style.display = "none";
     
     li.className = messageType;
     li.innerHTML = `
     
-      <span class="receiver">${data.timestamp}</span>
+      <span class="${timestampType}">${currentTimestamp}:</span>
       <span class="sender">${messageType === 'sent' ? 'Me' : '<%= user.name %>'}:</span>
       <span class="message-content">${data.message}</span>`;
 
-    chatBox.appendChild(li);
+    ul.appendChild(li);
 
     // Scroll to the bottom of the chat box
     chatBox.scrollTop = chatBox.scrollHeight;
@@ -193,15 +197,11 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log(data.isTyping);
     if(data.senderId == '<%= UserId %>' && data.isTyping == true){
 
-      li.className = "received";
-      li.innerHTML = `
-      <span class="message-content" id="typing">Typing...</span>
-      `;
-      chatBox.appendChild(li);
+      typingIndicator.style.display = "block";
       
   }else {
-    typingIndicator.remove();
-    console.log("removed");
+    typingIndicator.style.display = "none";
+  
   }
   chatBox.scrollTop = chatBox.scrollHeight;
 });
@@ -264,12 +264,12 @@ chatBox.scrollTop = chatBox.scrollHeight;
 
   <div class="container">
     <h1>Chat with <%= user.name %></h1>
-    
+    <span class="message-content" id="typing" style="display: none;">Typing...</span>
     <!-- Display existing messages -->
     <div class="chat-box" id="chatBox">
       
       <ul class="messages">
-      
+        
         <% for (const sentMessage of sortedMessages) { %>
           <% if (sentMessage.senderId == user1 && sentMessage.reciverId == UserId) { %>
             <li class="sent">

@@ -7,12 +7,14 @@ function listen(io) {
   chatNamespace.on("connection", (socket) => {
     console.log("User connected", socket.id);
     let roomName = "";
+    let roomName2 = "";
     connectedUsers[socket.id] = { connected: true, typing: false };
 
     // Emit 'join' event to notify user presence
     socket.broadcast.emit("join", { userId: socket.id, connectedUsers });
     socket.on("ready", ({ userId, senderId }) => {
-      roomName = `ski aty `;
+      const sortedIds = [userId, senderId].sort();
+      roomName = sortedIds.join("-");
 
       // Join the room for both sender and receiver
       socket.join(roomName);

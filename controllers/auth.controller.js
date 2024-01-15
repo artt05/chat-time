@@ -62,6 +62,7 @@ const registerUser = (req, res) => {
               if (err) throw err;
               newUser.safeword = hash1;
               newUser.password = hash;
+              newUser.salt = salt;
               newUser
                 .save()
 
@@ -104,31 +105,39 @@ const changePasswordView = (req, res) => {
   res.render("changepassword-view", { id });
 };
 const check = async (req, res) => {
-  const { safeword } = req.body;
-  const id = req.params.id;
-  console.log(safeword + " " + id);
-  const user = await User.findOne({ id: id });
-  const email = user.email;
-  console.log(user.safeword);
-  if (!safeword) {
-    res.redirect(
-      `/safeword-view/${id}?error=` +
-        encodeURIComponent("Please fill in all the fields") +
-        `&color=` +
-        encodeURIComponent("danger")
-    );
-  } else if (user.safeword !== safeword) {
-    console.log("Please fill in all the fields");
-    res.redirect(
-      `/safeword-view/${id}?error=` +
-        encodeURIComponent("Wrong safeword, please try again") +
-        `&color=` +
-        encodeURIComponent("danger")
-    );
-  } else {
+  try {
+    const id = req.params.id;
+    const user = await User.findOne({ _id: id });
+    console.log("arti", id);
+    console.log(" ski kqa " + user);
+
+    if (!user) {
+      // Handle the case where the user with the specified id is not found
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Generate salt
+
+    // Hash the provided safeword with the generated salt
+    const hashedSafeword = await bcrypt.hash(req.body.safeword, user.salt);
+
+    if (user.safeword !== hashedSafeword) {
+      console.log(user.safeword + " saved safeword " + hashedSafeword);
+      return res.redirect(
+        `/safeword-view/${id}?error=` +
+          encodeURIComponent("Wrong safeword, please try again") +
+          `&color=` +
+          encodeURIComponent("danger")
+      );
+    }
+
     res.redirect(`/changepassword-view/${id}`);
+  } catch (error) {
+    console.error("Error in check function:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
 const deleteAccount = async (req, res) => {
   const id = req.user._id;
   User.findByIdAndDelete(id, (err, docs) => {
@@ -200,12 +209,13 @@ const changePassword = async (req, res) => {
 };
 const safewordView = (req, res) => {
   const id = req.params.id;
+  console.log("baba", id);
   res.render("safeword-view", { id });
 };
 const emailCheck = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email });
-  console.log(email, user);
+  console.log("argjendi", email, user);
   if (!email) {
     console.log("Please fill in all the fields");
     res.redirect(
