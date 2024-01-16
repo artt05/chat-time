@@ -20,6 +20,9 @@ const postSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  type: {
+    type: String,
+  },
 });
 
 // Create the Post model

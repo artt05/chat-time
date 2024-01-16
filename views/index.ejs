@@ -36,12 +36,17 @@
             <div><%= post.user.name %></div>
           </div>
           <% if (post.image) { %>
-            
+            <% if (post.image.includes(".jpg") || post.image.includes(".png") || post.image.includes(".jpeg")){ %>
             <img style="width: 60%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
-
+            <% } else if (post.image.includes(".mp4")){ %>  
             <video width="500px" height="500px" controls="controls">
-              <source src="uploads/uploads/<%= post.image %>" type="video/mp4" />
+              <source src="uploads/uploads/<%= post.image %>"type="video/mp4" />
              </video>
+            <% } else if (post.image.includes(".mp3")){ %>
+            <audio controls>
+              <source src="uploads/uploads/<%= post.image %>" type="audio/mpeg">
+            </audio>
+            <% } %>
           <% } %>
           <div> <%= post.content %></div>
           <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
@@ -92,5 +97,6 @@
       }
     }
   </script>
+  <%- include('alert.ejs'); %>
 </body>
 </html>

@@ -17,6 +17,7 @@ const createPost = async (req, res) => {
     content,
     user: userId,
     image: req.file ? `${req.file.filename}` : null,
+    type: req.file ? req.file.mimetype : null,
   });
 
   newPost
