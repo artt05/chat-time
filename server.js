@@ -33,6 +33,7 @@ mongoose
 
 const server = express();
 server.use(express.static("public"));
+
 server.set("view engine", "ejs");
 
 server.use(express.urlencoded({ extended: false }));
@@ -47,7 +48,7 @@ server.use(
 
 server.use(passport.initialize());
 server.use(passport.session());
-
+server.use("/uploads", express.static("uploads"));
 server.use("/", require("./routes/auth.router"));
 server.use("/", require("./routes/chat.route"));
 server.use("/", require("./routes/post.router"));

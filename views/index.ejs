@@ -35,6 +35,12 @@
             <img style="width: 5%;" src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg" class="card-img-top" alt="<%= post.user.name %>">
             <div><%= post.user.name %></div>
           </div>
+          <% if (post.image) { %>
+            
+            <img style="width: 60%;" src="uploads/uploads/1705397649407.jpg" class="card-img-top" alt="<%= post.user.name %>">
+
+
+          <% } %>
           <div> <%= post.content %></div>
           <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
             <%- post.likes.length %>

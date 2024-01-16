@@ -2,10 +2,11 @@
 <%- include("../layout.ejs"); %>
   <div class="container">
     <h1>Create Post</h1>
-    <form action="/post" method="post">
+    <form action="/post" method="post" enctype="multipart/form-data">
       <div class="form-group">
         <label for="content">Content:</label>
         <textarea class="form-control" id="content" name="content" rows="4" cols="50"></textarea>
+        <input type="file" name="image">
       </div>
       <button type="submit" class="btn btn-primary">Create</button>
     </form>
