@@ -39,7 +39,9 @@
             
             <img style="width: 60%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
 
-
+            <video width="500px" height="500px" controls="controls">
+              <source src="uploads/uploads/<%= post.image %>" type="video/mp4" />
+             </video>
           <% } %>
           <div> <%= post.content %></div>
           <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
