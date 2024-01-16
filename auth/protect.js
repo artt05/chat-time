@@ -24,7 +24,9 @@ const validateUpload = (req, res, next) => {
   }
 };
 const validateUpload2 = (req, res, next) => {
-  if (req.file.size < 500000000) {
+  if (!req.file) {
+    next();
+  } else if (req.file.size < 500000000) {
     next();
   } else {
     return res.redirect(
