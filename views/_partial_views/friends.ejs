@@ -2,23 +2,31 @@
 
 <div class="container py-5">
   <h3 class="mb-4">My Friends</h3>
-  
+
   <% if (friends.length > 0) { %>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-      <% friends.forEach(friend => { %>
-        <div class="col">
-          <div class="card h-100">
-            <img style="width: 70px;" src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg" class="card-img-top" alt="<%= friend.name %>">
-            <div class="card-body">
-              <h5 class="card-title"><%= friend.name %></h5>
-              <p class="card-text"><%= friend.email %></p>
-              <a href="/chat/<%= friend._id %>" class="btn btn-primary">Chat</a>
-            </div>
-          </div>
+  <div class="row row-cols-1 row-cols-md-3 g-4">
+    <% friends.forEach(friend => { %>
+    <div class="col">
+      <div class="card h-100">
+        <img
+          style="width: 70px"
+          src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
+          class="card-img-top"
+          alt="<%= friend.name %>"
+        />
+        <div class="card-body">
+          <h5 class="card-title"><%= friend.name %></h5>
+          <p class="card-text"><%= friend.email %></p>
+          <a href="/chat/<%= friend._id %>" class="btn btn-primary">Chat</a>
+          <a href="/remove-friend/<%= friend._id %>" class="btn btn-danger"
+            >Remove Friend</a
+          >
         </div>
-      <% }) %>
+      </div>
     </div>
+    <% }) %>
+  </div>
   <% } else { %>
-    <p>You don't have any friends yet.</p>
+  <p>You don't have any friends yet.</p>
   <% } %>
 </div>

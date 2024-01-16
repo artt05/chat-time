@@ -56,10 +56,15 @@
             <% } else { %>
               <i class="bi bi-hand-thumbs-up-fill text-success"></i>
             <% } %>
-          </button>
+            <% if (post.user.id === user.id) { %>
+             
+          </button>        <a href="/deletepost/<%= post.id %>"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
+            <% } %>
         </li>
+
       <% }); %>
     </ul>
+    
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

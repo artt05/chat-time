@@ -52,7 +52,7 @@ server.use("/uploads", express.static("uploads"));
 server.use("/", require("./routes/auth.router"));
 server.use("/", require("./routes/chat.route"));
 server.use("/", require("./routes/post.router"));
-server.get("/*", (req, res) => {
+server.get("/", (req, res) => {
   res.redirect("/index");
 });
 

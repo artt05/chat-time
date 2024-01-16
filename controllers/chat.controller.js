@@ -312,6 +312,32 @@ const rejectRequest = async (req, res) => {
     res.status(500).json({ error: "Something went wrong" });
   }
 };
+async function removeFriend(req, res) {
+  const friendId = req.params.id;
+  const userId = req.user.id;
+  console.log("friendId", friendId);
+  const user = await User.findById(userId).populate("friends");
+  const friend = await User.findById(friendId).populate("friends");
+
+  if (!user || !friend) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  const friendExists = user.friends.some((friends) =>
+    friends._id.equals(friendId)
+  );
+  const otherfriendExists = friend.friends.some((friends) =>
+    friends._id.equals(userId)
+  );
+  if (!friendExists || !otherfriendExists) {
+    return res.status(404).json({ error: "Friend not found" });
+  } else {
+    user.friends.pull(friendId);
+    friend.friends.pull(userId);
+    await user.save();
+    await friend.save();
+    res.redirect("/users/friends");
+  }
+}
 
 module.exports = {
   indexView,
@@ -324,4 +350,5 @@ module.exports = {
   sendMessage,
   chatView,
   scrollToBottom,
+  removeFriend,
 };

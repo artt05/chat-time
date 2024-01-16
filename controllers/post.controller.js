@@ -26,9 +26,7 @@ const createPost = async (req, res) => {
       res.redirect("/index");
     })
     .catch((error) => {
-      res
-        .status(500)
-        .json({ error: "An error occurred while creating the post." });
+      res.status(500).json({ error: error });
     });
 };
 
@@ -70,9 +68,63 @@ const likePost = (req, res) => {
         .json({ error: "An error occurred while finding the post." });
     });
 };
+function deletePost(req, res) {
+  const postId = req.params.postId;
+  const userId = req.user.id;
+  console.log(postId, userId);
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        return res.redirect(
+          `/index?error=` +
+            encodeURIComponent("The Post doesnt exist") +
+            `&color=` +
+            encodeURIComponent("danger")
+        );
+      }
+      if (!postId) {
+        return res.redirect(
+          `/index?error=` +
+            encodeURIComponent("The Post doesnt exist") +
+            `&color=` +
+            encodeURIComponent("danger")
+        );
+      }
+
+      if (post.user != userId) {
+        return res.redirect(
+          `/index?error=` +
+            encodeURIComponent("You dont have access for this action") +
+            `&color=` +
+            encodeURIComponent("danger")
+        );
+      }
+      post
+        .delete()
+        .then((updatedPost) => {
+          res.redirect(
+            `/index?error=` +
+              encodeURIComponent("The Post was deleted") +
+              `&color=` +
+              encodeURIComponent("success")
+          );
+        })
+        .catch((error) => {
+          res
+            .status(500)
+            .json({ error: "An error occurred while updating the post." });
+        });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while finding the post." });
+    });
+}
 
 module.exports = {
   createPost,
   createPostView,
   likePost,
+  deletePost,
 };

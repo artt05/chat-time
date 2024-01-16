@@ -3,6 +3,7 @@ const {
   createPost,
   createPostView,
   likePost,
+  deletePost,
 } = require("../controllers/post.controller");
 const {
   protectRoute,
@@ -22,5 +23,6 @@ router.post(
   createPost
 );
 router.put("/post/:postId/like", protectRoute, likePost);
+router.get("/deletepost/:postId", protectRoute, deletePost);
 
 module.exports = router;
