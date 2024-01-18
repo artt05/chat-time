@@ -13,7 +13,7 @@ const allowIf = (req, res, next) => {
 const validateUpload = (req, res, next) => {
   if (req.fileValidationError) {
     return res.redirect(
-      `/index?error=` +
+      `/post?error=` +
         encodeURIComponent("You cant post this type of file") +
         `&color=` +
         encodeURIComponent("danger")
@@ -23,14 +23,23 @@ const validateUpload = (req, res, next) => {
   }
 };
 const validateUpload2 = (req, res, next) => {
-  if (!req.file) {
-    next();
-  } else if (req.file.size < 500000000) {
-    next();
+  if (req.content) {
+    if (!req.file) {
+      next();
+    } else if (req.file.size < 500000000) {
+      next();
+    } else {
+      return res.redirect(
+        `/post?error=` +
+          encodeURIComponent("File is too big") +
+          `&color=` +
+          encodeURIComponent("danger")
+      );
+    }
   } else {
     return res.redirect(
-      `/index?error=` +
-        encodeURIComponent("File is too big") +
+      `/post?error=` +
+        encodeURIComponent("Please type something") +
         `&color=` +
         encodeURIComponent("danger")
     );

@@ -1,27 +1,35 @@
-<%- include('../layout.ejs'); %>
-
+<%- include("../layout.ejs"); %>
 <div class="container my-5">
   <div class="row">
     <div class="col-md-8 mx-auto">
       <h3 class="mb-4">Friend Requests</h3>
       <div class="list-group">
-        <% if (user.friendRequests.length > 0) { %>
-          <% user.friendRequests.forEach(request => { %>
-            <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-              <%= request.name %>
-              <div>
-                <form action="/users/<%= request._id %>/accept-request" method="POST" class="mr-3">
-                  <button type="submit" class="btn btn-success">Accept</button>
-                </form>
-                <br>
-                <form action="/users/<%= request._id %>/reject-request" method="POST">
-                  <button type="submit" class="btn btn-danger">Reject</button>
-                </form>
-              </div>
-            </a>
-          <% }) %>
-        <% } else { %>
-          <p>No friend requests</p>
+        <% if (user.friendRequests.length > 0) { %> <%
+        user.friendRequests.forEach(request => { %>
+        <a
+          href="#"
+          class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+        >
+          <%= request.name %>
+          <div>
+            <form
+              action="/users/<%= request._id %>/accept-request"
+              method="POST"
+              class="mr-3"
+            >
+              <button type="submit" class="btn btn-success">Accept</button>
+            </form>
+            <br />
+            <form
+              action="/users/<%= request._id %>/reject-request"
+              method="POST"
+            >
+              <button type="submit" class="btn btn-danger">Reject</button>
+            </form>
+          </div>
+        </a>
+        <% }) %> <% } else { %>
+        <p>No friend requests</p>
         <% } %>
       </div>
     </div>
