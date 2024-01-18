@@ -48,11 +48,8 @@ const searchView = async (req, res) => {
 };
 const sendMessage = async (req, res) => {
   const { message } = req.body;
-  console.log("message", message);
   const reciverId = req.params.id;
   const senderId = req.user._id;
-  console.log("reciverId", reciverId);
-  console.log("senderId", senderId);
 
   try {
     const newMessage = new Message({
@@ -110,13 +107,25 @@ const sendRequest = async (req, res) => {
       };
       const posts = await Post.find({ user: req.user._id });
 
-      res.render("index", { data, user: req.user, posts });
+      res.redirect(
+        `/search?name=${recipient.name}&error=` +
+          encodeURIComponent("The request was sent successfully!") +
+          `&color=` +
+          encodeURIComponent("success")
+      );
     } else {
       const data = {
         message: "You have already sent a friend request to this user.",
         isFriendRequestSent: false,
       };
-      res.render("index", { data });
+      res.redirect(
+        `/search?name=${recipient.name}&error=` +
+          encodeURIComponent(
+            "You have already sent a friend request to this user."
+          ) +
+          `&color=` +
+          encodeURIComponent("danger")
+      );
     }
   } catch (error) {
     console.error(error);
@@ -201,8 +210,6 @@ const chatView = async (req, res) => {
   }
 
   try {
-    console.log("req.params.id", req.params.id);
-    console.log("req.user._id", req.user.id);
     const receivedMessages = await Message.find({
       reciverId: req.user._id,
       senderId: req.params.id,
@@ -315,7 +322,6 @@ const rejectRequest = async (req, res) => {
 async function removeFriend(req, res) {
   const friendId = req.params.id;
   const userId = req.user.id;
-  console.log("friendId", friendId);
   const user = await User.findById(userId).populate("friends");
   const friend = await User.findById(friendId).populate("friends");
 

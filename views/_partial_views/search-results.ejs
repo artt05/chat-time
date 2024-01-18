@@ -1,24 +1,27 @@
 <%- include('../layout.ejs'); %>
 <div class="container p-5">
   <h3>Results of the search</h3>
-  <div class="card" style="width: 18rem;">
+  <div class="card" style="width: 18rem">
     <div class="card-body">
       <% if (users.length> 0) { %>
-      <ul style="list-style-type: none;" class="list-group">
+      <ul style="list-style-type: none" class="list-group">
         <% users.forEach(user=> { %>
-        <h5 class="card-title"><%= user.name %></h5>
+        <h5 class="card-title" style="text-transform: capitalize">
+          <%= user.name %>
+        </h5>
         <li><%= user.name %></li>
         <li><%= user.email %></li>
         <form action="/users/<%= user._id %>/send-request" method="get">
           <% if (user.isSent) { %>
-            <button disabled>Add as Friend</button>
-          <% } else { %>
-            <% if (currentUser && currentUser._id.toString() !== user._id.toString()) { %>
-              <form action="/users/<%= user._id %>/send-request" method="get">
-                <button id="send-friend-request">Add as Friend</button>
-              </form>
-            <% } %>
-          <% } %>
+          <button class="btn btn-success" disabled>Add as Friend</button>
+          <% } else { %> <% if (currentUser && currentUser._id.toString() !==
+          user._id.toString()) { %>
+          <form action="/users/<%= user._id %>/send-request" method="get">
+            <button id="send-friend-request" class="btn btn-success">
+              Add as Friend
+            </button>
+          </form>
+          <% } %> <% } %>
         </form>
         <% }) %>
       </ul>
@@ -28,3 +31,4 @@
     </div>
   </div>
 </div>
+<%- include('../alert.ejs'); %>

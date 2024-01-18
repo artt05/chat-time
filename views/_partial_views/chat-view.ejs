@@ -156,7 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Listen for join event
   socket.on('join', function (data) {
-    console.log(data);
   });
   function loadReady() {
     socket.emit("ready", { userId: '<%= UserId %>', senderId: '<%= user1 %>'});
@@ -164,16 +163,12 @@ document.addEventListener('DOMContentLoaded', function () {
   loadReady();
   // Listen for incoming messages
   socket.on('message', function (data) {
-    console.log("art");
     const typingIndicator = document.getElementById('typing');
     const ul = document.querySelector('.messages');
     const li = document.createElement('li');
     const currentTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
     const messageType = data.senderId === '<%= user1 %>' ? 'sent' : 'received';
-    console.log(messageType);
     timestampType = messageType === 'sent' ? 'receiver-right' : 'receiver';
-    console.log(data);
-    console.log('<%=UserId %>', '<%= user1 %>');
    typingIndicator.style.display = "none";
     
     li.className = messageType;
@@ -190,11 +185,9 @@ document.addEventListener('DOMContentLoaded', function () {
   });
   socket.on('typing', function (data) {
     // Handle the typing event (display typing indicator, etc.)
-    console.log("typing",data.senderId);
     const li = document.createElement('li');
     const typingIndicator = document.getElementById('typing');
     chatBox
-    console.log(data.isTyping);
     if(data.senderId == '<%= UserId %>' && data.isTyping == true){
 
       typingIndicator.style.display = "block";
@@ -210,7 +203,6 @@ chatBox.scrollTop = chatBox.scrollHeight;
   // Listen for typing event
   socket.on('typing', function (data) {
     // Handle the typing event (display typing indicator, etc.)
-    console.log(`${data.senderId} is ${data.isTyping ? 'typing' : 'not typing'}`);
   });
 
   // Handle form submission

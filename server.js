@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const http = require("http");
 const io = require("socket.io");
 const mongoose = require("mongoose");
@@ -38,6 +39,7 @@ server.set("view engine", "ejs");
 
 server.use(express.urlencoded({ extended: false }));
 server.use(express.json());
+
 server.use(
   cookieSession({
     name: "session1",
@@ -52,7 +54,7 @@ server.use("/uploads", express.static("uploads"));
 server.use("/", require("./routes/auth.router"));
 server.use("/", require("./routes/chat.route"));
 server.use("/", require("./routes/post.router"));
-server.get("/", (req, res) => {
+server.get("/*", (req, res) => {
   res.redirect("/index");
 });
 

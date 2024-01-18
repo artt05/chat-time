@@ -3,15 +3,18 @@
   
 </style>
 <div class="container">
-    <div class="row justify-content-center">
-      <h2><%- user.name %></h2>
-    </div>
+    
 
-    <form action="/search" method="get">
-      <label for="query">Search users with fullname: </label><br>
-      <input type="text" name="name" placeholder="Fullname">
-      <button type="submit">Search</button><br><br>
-    </form>
+  <form action="/search" method="get" class="w-80">
+    <div class="mb-3">
+        <label for="query" class="form-label">Search users with fullname:</label>
+        <input type="text" name="name" class="form-control" placeholder="Fullname">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+</form>
+<div class="row justify-content-center">
+  <h2 style="text-transform: capitalize;"><%- user.name %></h2>
+</div>
     <div class="d-flex justify-content-between">
       <div>
         <a class="btn btn-warning" href="/users/friend-requests">Requests</a>
@@ -48,18 +51,22 @@
             </audio>
             <% } %>
           <% } %>
-          <div> <%= post.content %></div>
+          <div style="max-width: 900px; word-wrap: break-word;">
+            <p><%= post.content %></p>
+        </div>
+          <div class="d-flex justify-content-between">
+            <div>
           <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
             <%- post.likes.length %>
             <% if (post.likes.includes(user.id)) { %>
               <i class="bi bi-hand-thumbs-down-fill text-danger"></i>
             <% } else { %>
               <i class="bi bi-hand-thumbs-up-fill text-success"></i>
-            <% } %>
+            <% } %></div>
             <% if (post.user.id === user.id) { %>
-             
+             <div>
           </button>        <a href="/deletepost/<%= post.id %>"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
-            <% } %>
+           </div> <% } %></div>
         </li>
 
       <% }); %>

@@ -10,9 +10,7 @@ const createPost = async (req, res) => {
   const { content } = req.body;
 
   const userId = req.user.id; // Assuming the authenticated user's ID is stored in req.user.id
-  console.log("akik", req.file);
   const user = await User.findById(userId);
-  console.log(req.body);
   const newPost = new Post({
     content,
     user: userId,
@@ -71,7 +69,6 @@ const likePost = (req, res) => {
 function deletePost(req, res) {
   const postId = req.params.postId;
   const userId = req.user.id;
-  console.log(postId, userId);
   Post.findById(postId)
     .then((post) => {
       if (!post) {

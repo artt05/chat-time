@@ -13,7 +13,6 @@ const loginCheck = (passport) => {
       User.findOne({ email: email })
         .then((user) => {
           if (!user) {
-            console.log("wrong email");
             return done();
           }
 
@@ -24,7 +23,6 @@ const loginCheck = (passport) => {
             if (isMatch) {
               return done(null, user);
             } else {
-              console.log("Wrong password");
               return done();
             }
           });

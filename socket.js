@@ -5,7 +5,6 @@ function listen(io) {
   const connectedUsers = {};
 
   chatNamespace.on("connection", (socket) => {
-    console.log("User connected", socket.id);
     let roomName = "";
     let roomName2 = "";
     connectedUsers[socket.id] = { connected: true, typing: false };
@@ -18,24 +17,18 @@ function listen(io) {
 
       // Join the room for both sender and receiver
       socket.join(roomName);
-      console.log("Joined room:", roomName);
     });
     socket.on("message", ({ userId, senderId, message }) => {
-      console.log("Received message:", message);
-
       // Create a room name based on the userId and senderId
 
       // Emit the message to the room
       chatNamespace
         .to(roomName)
         .emit("message", { senderId: senderId, message });
-
-      console.log("message sent");
     });
 
     socket.on("typing", ({ senderId, isTyping }) => {
       connectedUsers[socket.id].typing = isTyping;
-      console.log("Received typing:", isTyping);
       // Create a room name based on the userId and senderId
 
       // Join the room
@@ -44,12 +37,9 @@ function listen(io) {
       chatNamespace
         .to(roomName)
         .emit("typing", { senderId: senderId, isTyping });
-
-      console.log("typing sent");
     });
 
     socket.on("disconnect", () => {
-      console.log("User disconnected");
       delete connectedUsers[socket.id];
       chatNamespace.emit("join", { connectedUsers });
     });

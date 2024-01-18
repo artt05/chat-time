@@ -11,9 +11,7 @@ const registerView = (req, res) => {
 
 const registerUser = (req, res) => {
   const { name, email, location, password, confirm, safeword } = req.body;
-  console.log(safeword);
   if (!name || !email || !password || !confirm || !safeword) {
-    console.log("Fill empty fields");
     res.redirect(
       `/register?error=` +
         encodeURIComponent("Fill empty fields") +
@@ -25,7 +23,6 @@ const registerUser = (req, res) => {
   //Confirm Passwords
 
   if (password !== confirm) {
-    console.log("Password must match");
     res.redirect(
       `/register?error=` +
         encodeURIComponent("Password must match") +
@@ -36,7 +33,6 @@ const registerUser = (req, res) => {
     //Validation
     User.findOne({ email: email }).then((user) => {
       if (user) {
-        console.log("email exists");
         res.redirect(
           `/register?error=` +
             encodeURIComponent("Email already exists") +
@@ -52,7 +48,6 @@ const registerUser = (req, res) => {
           password,
           safeword,
         });
-        console.log(newUser, safeword);
         //Password Hashing
         bcrypt.genSalt(10, (err, salt) =>
           bcrypt.hash(newUser.password, salt, (err, hash) => {
@@ -101,15 +96,12 @@ const loginView = (req, res) => {
 // };
 const changePasswordView = (req, res) => {
   const id = req.params.id;
-  console.log("mrriti" + id);
   res.render("changepassword-view", { id });
 };
 const check = async (req, res) => {
   try {
     const id = req.params.id;
     const user = await User.findOne({ _id: id });
-    console.log("arti", id);
-    console.log(" ski kqa " + user);
 
     if (!user) {
       // Handle the case where the user with the specified id is not found
@@ -122,7 +114,6 @@ const check = async (req, res) => {
     const hashedSafeword = await bcrypt.hash(req.body.safeword, user.salt);
 
     if (user.safeword !== hashedSafeword) {
-      console.log(user.safeword + " saved safeword " + hashedSafeword);
       return res.redirect(
         `/safeword-view/${id}?error=` +
           encodeURIComponent("Wrong safeword, please try again") +
@@ -174,7 +165,6 @@ const changePassword = async (req, res) => {
         encodeURIComponent("danger")
     );
   } else if (password !== confirm) {
-    console.log("Password must match");
     res.redirect(
       `/changepassword-view/${id}?error=` +
         encodeURIComponent("Password must match") +
@@ -182,21 +172,16 @@ const changePassword = async (req, res) => {
         encodeURIComponent("danger")
     );
   } else {
-    console.log("id", id);
-    console.log("password", password);
     bcrypt.genSalt(10, async (err, salt) =>
       bcrypt.hash(password, salt, async (err, hash) => {
         if (err) throw err;
 
         password = hash;
 
-        console.log("password", password);
         const user = await User.findByIdAndUpdate(id, {
           password,
         });
 
-        console.log(user.email);
-        console.log("sfsfsf");
         res.redirect(
           `/login?error=` +
             encodeURIComponent("Password was changed sccsessfuly!") +
@@ -209,15 +194,12 @@ const changePassword = async (req, res) => {
 };
 const safewordView = (req, res) => {
   const id = req.params.id;
-  console.log("baba", id);
   res.render("safeword-view", { id });
 };
 const emailCheck = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email: email });
-  console.log("argjendi", email, user);
   if (!email) {
-    console.log("Please fill in all the fields");
     res.redirect(
       `/email-view?error=` +
         encodeURIComponent("Please fill in all the fields") +
@@ -225,7 +207,6 @@ const emailCheck = async (req, res) => {
         encodeURIComponent("danger")
     );
   } else if (!user) {
-    console.log("email does not exist");
     res.redirect(
       `/email-view?error=` +
         encodeURIComponent("Email does not exist") +
@@ -234,7 +215,6 @@ const emailCheck = async (req, res) => {
     );
   } else {
     const id = user._id;
-    console.log("id", user._id, email);
     res.redirect(`safeword-view/${id}`);
   }
 };
@@ -243,7 +223,6 @@ const loginUser = (req, res) => {
 
   //Required
   if (!email || !password) {
-    console.log("Please fill in all the fields");
     res.redirect(
       `/login?error=` +
         encodeURIComponent("Please fill in all the fields") +
