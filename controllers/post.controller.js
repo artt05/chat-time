@@ -9,6 +9,7 @@ const createPostView = (req, res) => {
 const createPost = async (req, res) => {
   const { content } = req.body;
 
+w
   const userId = req.user.id; // Assuming the authenticated user's ID is stored in req.user.id
   const user = await User.findById(userId);
   const newPost = new Post({
