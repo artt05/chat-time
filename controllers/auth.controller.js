@@ -1,7 +1,8 @@
 const passport = require("passport");
 const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
-
+const salt = require("../salt/salt");
+const Post = require("../models/post.model");
 //For Register Page
 const registerView = (req, res) => {
   res.render("register", {});
@@ -49,30 +50,27 @@ const registerUser = (req, res) => {
           safeword,
         });
         //Password Hashing
-        bcrypt.genSalt(10, (err, salt) =>
-          bcrypt.hash(newUser.password, salt, (err, hash) => {
+        bcrypt.hash(newUser.password, salt, (err, hash) => {
+          if (err) throw err;
+
+          bcrypt.hash(newUser.safeword, salt, (err, hash1) => {
             if (err) throw err;
+            newUser.safeword = hash1;
+            newUser.password = hash;
+            newUser
+              .save()
 
-            bcrypt.hash(newUser.safeword, salt, (err, hash1) => {
-              if (err) throw err;
-              newUser.safeword = hash1;
-              newUser.password = hash;
-              newUser.salt = salt;
-              newUser
-                .save()
-
-                .then((user) => {
-                  req.login(user, function (err) {
-                    if (err) {
-                      console.log(err);
-                    }
-                    return res.redirect("/index");
-                  });
-                })
-                .catch((err) => console.log(err));
-            });
-          })
-        );
+              .then((user) => {
+                req.login(user, function (err) {
+                  if (err) {
+                    console.log(err);
+                  }
+                  return res.redirect("/index");
+                });
+              })
+              .catch((err) => console.log(err));
+          });
+        });
       }
     });
   }
@@ -111,7 +109,7 @@ const check = async (req, res) => {
     // Generate salt
 
     // Hash the provided safeword with the generated salt
-    const hashedSafeword = await bcrypt.hash(req.body.safeword, user.salt);
+    const hashedSafeword = await bcrypt.hash(req.body.safeword, salt);
 
     if (user.safeword !== hashedSafeword) {
       return res.redirect(
@@ -131,6 +129,7 @@ const check = async (req, res) => {
 
 const deleteAccount = async (req, res) => {
   const id = req.user._id;
+  await Post.deleteMany({ user: id });
   User.findByIdAndDelete(id, (err, docs) => {
     res.redirect(
       `/login?error=` +
@@ -139,6 +138,33 @@ const deleteAccount = async (req, res) => {
         encodeURIComponent("success")
     );
   });
+};
+const confirmPasswordView = (req, res) => {
+  const id = req.params.id;
+  res.render("confirmpassword-view", { id });
+};
+const confirmPassword = async (req, res) => {
+  const id = req.params.id;
+  const { password } = req.body;
+  const user = await User.findOne({ _id: id });
+  if (!password) {
+    res.redirect(
+      `/confirmpassword-view/${id}?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  hashedPassword = await bcrypt.hash(password, salt);
+  if (hashedPassword !== user.password) {
+    res.redirect(
+      `/confirmpassword-view/${id}?error=` +
+        encodeURIComponent("Wrong password, please try again") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  res.redirect(`/changepassword-view/${id}`);
 };
 //Logging in Function
 const emailView = (req, res) => {
@@ -155,42 +181,72 @@ const emailView = (req, res) => {
 };
 // };
 const changePassword = async (req, res) => {
-  let { password, confirm } = req.body;
+  console.log("arti");
   const id = req.params.id;
-  if (!password || !confirm) {
-    res.redirect(
+  console.log("arti");
+  console.log(id);
+  if (!id) {
+    return res.redirect(
+      `/changepassword-view/${id}?error=` +
+        encodeURIComponent("No User selected") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  console.log("arti", id);
+  const { safeword, password, confirm } = req.body;
+  if (!safeword || !password || !confirm) {
+    return res.redirect(
       `/changepassword-view/${id}?error=` +
         encodeURIComponent("Please fill in all the fields") +
         `&color=` +
         encodeURIComponent("danger")
     );
-  } else if (password !== confirm) {
-    res.redirect(
+  }
+  console.log("arti");
+  const user = await User.findById(id);
+  console.log(user);
+  const hashedSafeword = await bcrypt.hash(safeword, salt);
+  console.log(hashedSafeword);
+  if (hashedSafeword !== user.safeword) {
+    return res.redirect(
+      `/changepassword-view/${id}?error=` +
+        encodeURIComponent("Wrong safeword, please try again") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  if (password !== confirm) {
+    return res.redirect(
       `/changepassword-view/${id}?error=` +
         encodeURIComponent("Password must match") +
         `&color=` +
         encodeURIComponent("danger")
     );
-  } else {
-    bcrypt.genSalt(10, async (err, salt) =>
-      bcrypt.hash(password, salt, async (err, hash) => {
-        if (err) throw err;
-
-        password = hash;
-
-        const user = await User.findByIdAndUpdate(id, {
-          password,
-        });
-
-        res.redirect(
-          `/login?error=` +
-            encodeURIComponent("Password was changed sccsessfuly!") +
-            `&color=` +
-            encodeURIComponent("success")
-        );
-      })
+  }
+  const hashedPassword = await bcrypt.hash(password, salt);
+  if (hashedPassword === user.password) {
+    return res.redirect(
+      `/changepassword-view/${id}?error=` +
+        encodeURIComponent("Password must be different from the old one") +
+        `&color=` +
+        encodeURIComponent("danger")
     );
   }
+
+  user.password = hashedPassword;
+  console.log(user);
+  await user.save();
+  // const user = await User.findByIdAndUpdate(id, {
+  //   password,
+  // });
+
+  res.redirect(
+    `/index?error=` +
+      encodeURIComponent("Password was changed sccsessfuly!") +
+      `&color=` +
+      encodeURIComponent("success")
+  );
 };
 const safewordView = (req, res) => {
   const id = req.params.id;
@@ -215,7 +271,7 @@ const emailCheck = async (req, res) => {
     );
   } else {
     const id = user._id;
-    res.redirect(`safeword-view/${id}`);
+    res.redirect(`/changepassword-view/${id}`);
   }
 };
 const loginUser = (req, res) => {
@@ -243,7 +299,45 @@ const loginUser = (req, res) => {
 };
 const logoutUser = (req, res) => {
   req.logout(); // Passport.js function to remove the user from the session
-  res.redirect("/login");
+  return res.redirect("/login");
+};
+const updateProfile = async (req, res) => {
+  const id = req.user._id;
+  const { name, email } = req.body;
+  if (!name || !email) {
+    return res.redirect(
+      `/profile-view?error=` +
+        encodeURIComponent("Please fill in all the fields") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  const user = await User.findById(id);
+  if (!user) {
+    return res.redirect(
+      `/profile-view?error=` +
+        encodeURIComponent("User not found") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  if (user.email == email && user.name == name) {
+    return res.redirect(
+      `/users/profile-view?error=` +
+        encodeURIComponent("No changes were made") +
+        `&color=` +
+        encodeURIComponent("danger")
+    );
+  }
+  user.name = name;
+  user.email = email;
+  await user.save();
+  return res.redirect(
+    `/users/profile-view?error=` +
+      encodeURIComponent("Profile was updated successfuly!") +
+      `&color=` +
+      encodeURIComponent("success")
+  );
 };
 
 module.exports = {
@@ -259,4 +353,7 @@ module.exports = {
   changePasswordView,
   safewordView,
   deleteAccount,
+  confirmPasswordView,
+  confirmPassword,
+  updateProfile,
 };

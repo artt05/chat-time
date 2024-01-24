@@ -27,7 +27,8 @@ const indexView = async (req, res) => {
 const searchView = async (req, res) => {
   try {
     const users = await User.find({ name: { $regex: `^${req.query.name}$` } });
-
+    const query = req.query.name;
+    console.log("art", query);
     const senderId = req.user._id;
 
     for (const user of users) {
@@ -40,6 +41,7 @@ const searchView = async (req, res) => {
     res.render("_partial_views/search-results", {
       users,
       currentUser: req.user,
+      query,
     });
   } catch (error) {
     console.error(error);
@@ -344,6 +346,11 @@ async function removeFriend(req, res) {
     res.redirect("/users/friends");
   }
 }
+const profileView = async (req, res) => {
+  const userId = req.user._id;
+  const user = await User.findById(userId);
+  res.render("_partial_views/profile-view", { userId, user });
+};
 
 module.exports = {
   indexView,
@@ -357,4 +364,5 @@ module.exports = {
   chatView,
   scrollToBottom,
   removeFriend,
+  profileView,
 };

@@ -1,0 +1,82 @@
+<%- include("../layout.ejs"); %>
+<div class="container-fluid p-5">
+  <div class="row justify-content-center align-items-center">
+    <!-- Left Column - Profile Icon -->
+    <div class="col-md-3 text-center">
+      <h1>Profile Picture</h1>
+      <img
+        style="width: 100%"
+        src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
+        class="card-img-top"
+      />
+
+      <a href="/changepassword-view/<%- user._id %>"
+        ><button type="submit" class="btn btn-info">Change Password</button></a
+      >
+    </div>
+
+    <!-- Right Column - Profile Form -->
+    <div class="col-md-8">
+      <form action="/update-profile" method="post" class="p-4">
+        <h2 class="mb-4">Profile Settings</h2>
+
+        <!-- Email Field -->
+        <div class="mb-3">
+          <label for="email" class="form-label">Name:</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            class="form-control"
+            placeholder="Your Name"
+            required
+            value="<%= user.name %>"
+          />
+          <label for="email" class="form-label">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="form-control"
+            placeholder="Your Email"
+            value="<%= user.email %>"
+            required
+          />
+        </div>
+
+        <!-- Other Fields -->
+        <!-- Add additional form fields as needed -->
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-between">
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+          <div>
+            <a class="btn btn-danger" onclick="confirmAndCallFunction()">
+              Delete Account
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  function confirmAndCallFunction() {
+    swal
+      .fire({
+        title: "Are you sure you want to delete your account?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/deleteAccount";
+        }
+      });
+  }
+</script>
+<%- include("../alert.ejs"); %>

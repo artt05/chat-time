@@ -1,13 +1,41 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   $("#loginAlert").hide();
   const urlParams = new URLSearchParams(window.location.search);
   const myParam = urlParams.get("error");
   const myParam2 = urlParams.get("color");
+  let myParam3 = "";
+  let myParam4 = "";
+  if (myParam2 == "success") {
+    myParam3 = "Success!";
+    myParam4 = "success";
+  } else {
+    myParam3 = "Error!";
+    myParam4 = "error";
+  }
+  console.log(myParam4);
 
   if (myParam && myParam2) {
     // Set the text content of the <p> element to the value of myParam
-    $("#loginAlert").addClass("alert alert-" + myParam2);
-    $("#loginAlert p").text(myParam);
-    $("#loginAlert").show();
+    console.log(myParam4);
+    Swal.fire({
+      title: myParam3,
+      showClass: {
+        popup: `
+      animate__animated
+      animate__fadeInUp
+      animate__faster
+    `,
+      },
+      hideClass: {
+        popup: `
+      animate__animated
+      animate__fadeOutDown
+      animate__faster
+    `,
+      },
+      text: myParam,
+      icon: myParam4,
+    });
   }
 </script>

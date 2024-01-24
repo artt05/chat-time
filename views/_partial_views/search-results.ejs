@@ -1,5 +1,17 @@
 <%- include("../layout.ejs"); %>
 <div class="container p-5">
+  <form action="/search" method="get" class="w-70">
+    <div class="mb-3">
+      <label for="query" class="form-label">Search users with fullname:</label>
+      <input
+        type="text"
+        name="name"
+        class="form-control"
+        placeholder="Fullname"
+      />
+    </div>
+  </form>
+  <% if (query) { %>
   <h3>Results of the search</h3>
   <div class="card" style="width: 18rem">
     <div class="card-body">
@@ -30,5 +42,6 @@
       <% } %>
     </div>
   </div>
+  <% } %>
 </div>
 <%- include("../alert.ejs"); %>

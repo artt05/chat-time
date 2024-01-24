@@ -1,0 +1,15 @@
+<%- include('../layout.ejs'); %>
+<div class="container">
+  <form action="/search" method="get" class="w-70">
+    <div class="mb-3">
+      <label for="query" class="form-label">Search users with fullname:</label>
+      <input
+        type="text"
+        name="name"
+        class="form-control"
+        placeholder="Fullname"
+      />
+      <button type="submit" class="btn btn-primary">Search</button>
+    </div>
+  </form>
+</div>

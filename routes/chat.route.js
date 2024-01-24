@@ -9,6 +9,8 @@ const {
   rejectRequest,
   chatView,
   removeFriend,
+  profileView,
+  searchPage,
 } = require("../controllers/chat.controller");
 const { protectRoute } = require("../auth/protect");
 const router = require("./auth.router");
@@ -22,5 +24,6 @@ router.get("/users/friends", protectRoute, allFriendsView);
 router.post("/users/:id/reject-request", protectRoute, rejectRequest);
 router.get("/chat/:id", protectRoute, chatView);
 router.get("/remove-friend/:id", protectRoute, removeFriend);
+router.get("/users/profile-view", protectRoute, profileView);
 
 module.exports = router;

@@ -1,32 +1,25 @@
 <%- include('layout.ejs'); %>
 <style>
-  
+    .delete-account {
+    color: #fff; /* Set text color to white */
+    background-color: #d9534f; /* Red background color */
+    border-color: #d43f3a; /* Red border color */
+    border-radius: 5px;
+  }
+
+  .delete-account:hover {
+    background-color: #c9302c; /* Slightly lighter red on hover */
+    border-color: #ac2925; /* Slightly lighter red border on hover */
+  }
 </style>
 <div class="container">
     
 
-  <form action="/search" method="get" class="w-80">
-    <div class="mb-3">
-        <label for="query" class="form-label">Search users with fullname:</label>
-        <input type="text" name="name" class="form-control" placeholder="Fullname">
-    </div>
-    <button type="submit" class="btn btn-primary">Search</button>
-</form>
+  
 <div class="row justify-content-center">
   <h2 style="text-transform: capitalize;"><%- user.name %></h2>
 </div>
-    <div class="d-flex justify-content-between">
-      <div>
-        <a class="btn btn-warning" href="/users/friend-requests">Requests</a>
-        <a class="btn btn-primary" href="/users/friends">Friends</a>
-        <a class="btn btn-success" href="/post">Create Post</a>
-        
-      </div>
-      <div>
-        <a href="/logout"> <button type="submit" class="btn btn-primary login-button">Logout</button> </a>
-         <button onclick="confirmAndCallFunction()"  class="btn btn-danger login-button">Delete Account </button>
-      </div>
-</div>
+    
 
     <br><br>
 
@@ -59,7 +52,7 @@
           <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
             <%- post.likes.length %>
             <% if (post.likes.includes(user.id)) { %>
-              <i class="bi bi-hand-thumbs-down-fill text-danger"></i>
+              <i class="bi bi-hand-thumbs-up-fill text-danger"></i>
             <% } else { %>
               <i class="bi bi-hand-thumbs-up-fill text-success"></i>
             <% } %></div>
@@ -75,8 +68,17 @@
   </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     $(document).ready(function() {
+      $('.dropdown-toggle').on('click', function() {
+      const gearIcon = $(this).find('.bi-gear');
+      gearIcon.toggleClass('spin-on-click');
+
+      setTimeout(function() {
+        gearIcon.removeClass('spin-on-click');
+      }, 500); // Adjust the delay (in milliseconds) based on your transition duration
+    });
       $('.like-button').click(function() {
         var postId = $(this).data('postid');
         var liked = $(this).data('liked');
