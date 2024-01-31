@@ -11,67 +11,84 @@
     background-color: #c9302c; /* Slightly lighter red on hover */
     border-color: #ac2925; /* Slightly lighter red border on hover */
   }
+
+  /* Center the image and text */
+  .profile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-info img {
+    width: 100px; /* Set the width as needed */
+    height: 100px; /* Set the height as needed */
+    object-fit: cover;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
 </style>
 <div class="container">
-    
+  <div class="row justify-content-center">
+    <h2 style="text-transform: capitalize;"><%- user.name %></h2>
+  </div>
 
-  
-<div class="row justify-content-center">
-  <h2 style="text-transform: capitalize;"><%- user.name %></h2>
-</div>
-    
+  <br><br>
 
-    <br><br>
+  <h1>Posts</h1>
+  <ul class="list-group">
+    <% posts.forEach(function(post) { %>
+      <li class="list-group-item my-1">
+        <div class="profile-info">
+          <img src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg" class="card-img-top" alt="<%= post.user.name %>">
+          <div><%= post.user.name %></div>
+        </div>
 
-    <h1>Posts</h1>
-    <ul class="list-group">
-      <% posts.forEach(function(post) { %>
-        <li class="list-group-item my-1">
-          <div class="d-flex">
-            <img style="width: 5%;" src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg" class="card-img-top" alt="<%= post.user.name %>">
-            <div><%= post.user.name %></div>
-          </div>
-          <% if (post.image) { %>
-            <% if (post.image.includes(".jpg") || post.image.includes(".png") || post.image.includes(".jpeg")){ %>
+        <% if (post.image) { %>
+          <% if (post.image.includes(".jpg") || post.image.includes(".png") || post.image.includes(".jpeg")){ %>
             <img style="width: 60%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
-            <% } else if (post.image.includes(".mp4")){ %>  
+          <% } else if (post.image.includes(".mp4")){ %>  
             <video width="500px" height="500px" controls="controls">
               <source src="uploads/uploads/<%= post.image %>"type="video/mp4" />
-             </video>
-            <% } else if (post.image.includes(".mp3")){ %>
+            </video>
+          <% } else if (post.image.includes(".mp3")){ %>
             <audio controls>
               <source src="uploads/uploads/<%= post.image %>" type="audio/mpeg">
             </audio>
-            <% } %>
           <% } %>
-          <div style="max-width: 900px; word-wrap: break-word;">
-            <p><%= post.content %></p>
+        <% } %>
+
+        <div style="max-width: 900px; word-wrap: break-word;">
+          <p><%= post.content %></p>
         </div>
-          <div class="d-flex justify-content-between">
+
+        <div class="d-flex justify-content-between">
+          <div>
+            <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
+              <%- post.likes.length %>
+              <% if (post.likes.includes(user.id)) { %>
+                <i class="bi bi-hand-thumbs-up-fill text-success"></i>
+              <% } else { %>
+                <i class="bi bi-hand-thumbs-up-fill text-dark"></i>
+              <% } %>
+            </button>
+          </div>
+          <% if (post.user.id === user.id) { %>
             <div>
-          <button class="btn like-button" data-postid="<%= post._id %>" data-liked="<%= post.likes.includes(user.id) %>">
-            <%- post.likes.length %>
-            <% if (post.likes.includes(user.id)) { %>
-              <i class="bi bi-hand-thumbs-up-fill text-danger"></i>
-            <% } else { %>
-              <i class="bi bi-hand-thumbs-up-fill text-success"></i>
-            <% } %></div>
-            <% if (post.user.id === user.id) { %>
-             <div>
-          </button>        <a href="/deletepost/<%= post.id %>"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
-           </div> <% } %></div>
-        </li>
+              <a href="/deletepost/<%= post.id %>"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
+            </div>
+          <% } %>
+        </div>
+      </li>
+    <% }); %>
+  </ul>
+</div>
 
-      <% }); %>
-    </ul>
-    
-  </div>
-
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <script>
-    $(document).ready(function() {
-      $('.dropdown-toggle').on('click', function() {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $('.dropdown-toggle').on('click', function() {
       const gearIcon = $(this).find('.bi-gear');
       gearIcon.toggleClass('spin-on-click');
 
@@ -79,38 +96,37 @@
         gearIcon.removeClass('spin-on-click');
       }, 500); // Adjust the delay (in milliseconds) based on your transition duration
     });
-      $('.like-button').click(function() {
-        var postId = $(this).data('postid');
-        var liked = $(this).data('liked');
-        var button = $(this);
 
-        $.ajax({
-          type: 'PUT',
-          url: '/post/' + postId + '/like',
-          data: { liked: liked },
-          success: function(data) {
-            button.html(data.liked ? `${data.post.likes.length} <i class="bi bi-hand-thumbs-down-fill text-danger"></i>` : `${data.post.likes.length} <i class="bi bi-hand-thumbs-up-fill text-success"></i>`);
-            button.data('liked', data.liked);
-          },
-          error: function(error) {
-            console.log(error);
-          }
-        });
+    $('.like-button').click(function() {
+      var postId = $(this).data('postid');
+      var liked = $(this).data('liked');
+      var button = $(this);
+
+      $.ajax({
+        type: 'PUT',
+        url: '/post/' + postId + '/like',
+        data: { liked: liked },
+        success: function(data) {
+          button.html(data.liked ? `${data.post.likes.length} <i class="bi bi-hand-thumbs-up-fill text-success"></i>` : `${data.post.likes.length} <i class="bi bi-hand-thumbs-up-fill text-dark"></i>`);
+          button.data('liked', data.liked);
+        },
+        error: function(error) {
+          console.log(error);
+        }
       });
     });
-  </script>
-  <script>
-    function confirmAndCallFunction() 
-    {
-      const userConfirmed = window.confirm("Are you sure you want to delete your account?");
-      
-      if (userConfirmed) {
-        window.location.href = "/deleteAccount";
-      }else {
-        window.location.href = "/index";
-      }
+  });
+</script>
+<script>
+  function confirmAndCallFunction() {
+    const userConfirmed = window.confirm("Are you sure you want to delete your account?");
+    if (userConfirmed) {
+      window.location.href = "/deleteAccount";
+    } else {
+      window.location.href = "/index";
     }
-  </script>
-  <%- include('alert.ejs'); %>
+  }
+</script>
+<%- include('alert.ejs'); %>
 </body>
 </html>

@@ -7,7 +7,10 @@ const createPostView = (req, res) => {
 };
 // Create a new post
 const createPost = async (req, res) => {
+  console.log("filename", req.file.filename);
+
   const { content } = req.body;
+  console.log("content", content);
   const userId = req.user.id; // Assuming the authenticated user's ID is stored in req.user.id
   const user = await User.findById(userId);
   const newPost = new Post({
@@ -20,7 +23,7 @@ const createPost = async (req, res) => {
   newPost
     .save()
     .then((savedPost) => {
-      res.redirect("/index");
+      res.status(201).json({ post: savedPost });
     })
     .catch((error) => {
       res.status(500).json({ error: error });

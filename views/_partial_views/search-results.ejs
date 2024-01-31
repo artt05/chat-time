@@ -1,6 +1,6 @@
 <%- include("../layout.ejs"); %>
 <div class="container p-5">
-  <form action="/search" method="get" class="w-70">
+  <form action="/search" method="get" class="w-md-75 w-lg-50 mx-auto">
     <div class="mb-3">
       <label for="query" class="form-label">Search users with fullname:</label>
       <input
@@ -11,13 +11,14 @@
       />
     </div>
   </form>
+
   <% if (query) { %>
-  <h3>Results of the search</h3>
-  <div class="card" style="width: 18rem">
+  <h3 class="mt-4">Results of the search</h3>
+  <div class="card mx-auto" style="max-width: 18rem">
     <div class="card-body">
-      <% if (users.length> 0) { %>
+      <% if (users.length > 0) { %>
       <ul style="list-style-type: none" class="list-group">
-        <% users.forEach(user=> { %>
+        <% users.forEach(user => { %>
         <h5 class="card-title" style="text-transform: capitalize">
           <%= user.name %>
         </h5>
@@ -45,3 +46,31 @@
   <% } %>
 </div>
 <%- include("../alert.ejs"); %>
+
+<!-- SweetAlert for the second search bar -->
+<script>
+  window.onload = function () {
+    swal({
+      text: "Search users with fullname:",
+      content: {
+        element: "input",
+        attributes: {
+          type: "text",
+          name: "name",
+          placeholder: "Fullname",
+        },
+      },
+      buttons: {
+        confirm: {
+          text: "Search",
+          closeModal: true,
+        },
+      },
+    }).then((value) => {
+      if (value) {
+        // Perform the search with the entered value
+        window.location.href = "/search?name=" + value;
+      }
+    });
+  };
+</script>

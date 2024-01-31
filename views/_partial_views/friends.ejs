@@ -2,10 +2,11 @@
 <div class="container py-5">
   <h3 class="mb-4">My Friends</h3>
   <a class="" href="/users/friend-requests">Requests</a>
+
   <% if (friends.length > 0) { %>
   <div class="row row-cols-1 row-cols-md-3 g-4">
     <% friends.forEach(friend => { %>
-    <div class="col">
+    <div class="col mb-4">
       <div class="card h-100">
         <img
           style="width: 70px"
@@ -16,8 +17,12 @@
         <div class="card-body">
           <h5 class="card-title"><%= friend.name %></h5>
           <p class="card-text"><%= friend.email %></p>
-          <a href="/chat/<%= friend._id %>" class="btn btn-primary">Chat</a>
-          <a href="/remove-friend/<%= friend._id %>" class="btn btn-danger"
+          <a href="/chat/<%= friend._id %>" class="btn btn-primary btn-sm"
+            >Chat</a
+          >
+          <a
+            href="/remove-friend/<%= friend._id %>"
+            class="btn btn-danger btn-sm"
             >Remove Friend</a
           >
         </div>

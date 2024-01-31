@@ -1,17 +1,108 @@
 <!-- createPost.ejs -->
 <%- include("../layout.ejs"); %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <div class="container">
-    <h1>Create Post</h1>
-    <form action="/post" method="post" enctype="multipart/form-data">
-      <div class="form-group">
-        <label for="content">Content:</label>
-        <textarea class="form-control" id="content" name="content" rows="4" cols="50"></textarea>
-        <input type="file" name="image">
-      </div>
-      <button type="submit" class="btn btn-primary">Create</button>
-    </form>
-  </div>
+<style>
+  /* Custom styles for SweetAlert modals */
+  .swal2-popup {
+    border-radius: 10px;
+  }
+
+  .swal2-title {
+    font-size: 24px;
+  }
+
+  .swal2-content {
+    font-size: 18px;
+  }
+
+  .swal2-input,
+  .swal2-file {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .swal2-file {
+    padding: 20px;
+  }
+</style>
+
+<script>
+  // Function to handle image selection
+  async function selectImage() {
+    const { value: imageFile, dismiss } = await Swal.fire({
+      title: 'Select Image',
+      input: 'file',
+      inputAttributes: {
+        accept: 'image/*',
+        'aria-label': 'Upload an image',
+      },
+    });
+
+    if (imageFile) {
+      // Call the function to handle content input after image selection
+      enterContent(imageFile);
+    } else if (dismiss === Swal.DismissReason.ok) {
+      // Redirect to home page if "Cancel" is pressed
+      window.location.href = "/";
+    }
+  }
+
+  // Function to handle content input
+  async function enterContent(imageFile) {
+    const { value: content, dismiss } = await Swal.fire({
+      title: 'Enter Comment',
+      input: 'textarea',
+      inputLabel: 'Comment:',
+      inputPlaceholder: 'Type your comment here...',
+      showCancelButton: true,
+    });
+
+    if (content) {
+      // At this point, you have both the image file and content
+      // Perform further actions, e.g., post creation using an API
+      const formData = new FormData();
+      formData.append('content', content);
+      formData.append('image', imageFile);
+
+      // Assuming you have an API endpoint to handle post creation
+      await fetch("/post", {
+        method: "POST",
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show success message
+        Swal.fire({
+          title: "Success!",
+          text: "Post created successfully!",
+          icon: "success",
+        }).then(() => {
+          // Redirect to home page
+          window.location.href = "/";
+        });
+
+        // You can redirect or perform additional actions after success
+        // window.location.href = "/"; // Redirect to home page, for example
+      })
+      .catch(error => {
+        // Handle errors and show appropriate alert
+        Swal.fire({
+          title: "Error",
+          text: "Failed to create post!",
+          icon: "error",
+        });
+      });
+    } else if (dismiss === Swal.DismissReason.cancel) {
+      // Redirect to home page if "Cancel" is pressed
+      window.location.href = "/";
+    }
+  }
+
+  // Trigger the selectImage function when the page loads
+  window.onload = selectImage;
+</script>
+
 <%- include("../alert.ejs"); %>
 </body>
 </html>
