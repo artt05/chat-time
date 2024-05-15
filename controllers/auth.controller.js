@@ -238,7 +238,7 @@ const emailCheck = async (req, res) => {
     const token = jwt.sign({ id }, process.env.JWT_SECRET, {
       expiresIn: "10m",
     });
-    const url = `http://localhost:8001/check/${token}`;
+    const url = `http://https://chat-time.onrender.com/check/${token}`;
     console.log("mrriti");
     const transporter = nodemailer.createTransport({
       host: "smtp.titan.email",
