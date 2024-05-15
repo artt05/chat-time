@@ -1,5 +1,13 @@
 <%- include('../layout.ejs'); %>
-<div class="container">
+<style>
+  .container {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20%; /* Same as the width of the sidebar */
+  }
+</style>
+<div class="container py-5" style="margin-left: 15%">
   <form action="/search" method="get" class="w-70">
     <div class="mb-3">
       <label for="query" class="form-label">Search users with fullname:</label>
@@ -9,7 +17,6 @@
         class="form-control"
         placeholder="Fullname"
       />
-   
     </div>
   </form>
 </div>

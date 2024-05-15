@@ -349,7 +349,8 @@ async function removeFriend(req, res) {
 const profileView = async (req, res) => {
   const userId = req.user._id;
   const user = await User.findById(userId);
-  res.render("_partial_views/profile-view", { userId, user });
+  const userPosts = await Post.find({ user: userId });
+  res.render("_partial_views/profile-view", { userId, user, userPosts });
 };
 
 module.exports = {

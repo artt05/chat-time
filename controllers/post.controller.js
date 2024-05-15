@@ -98,6 +98,7 @@ function deletePost(req, res) {
             encodeURIComponent("danger")
         );
       }
+
       post
         .delete()
         .then((updatedPost) => {

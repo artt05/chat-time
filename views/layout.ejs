@@ -63,10 +63,26 @@
         border-radius: 10px;
         margin-bottom: 5px;
       }
+      .a-items i p{
+        font-size: 17px;
+        width: 100%;
+        display: block;
+        padding: 15px;
+        color: #000000c9; /* Set initial text color */
+        text-decoration: none;
+        transition: backround-color 0.5s, color 0.2s;
+        border-radius: 10px;
+        margin-bottom: 5px;
+      }
     
       .a-items i {
         margin-right: 10px;
         font-size: 20px;
+      }
+      .a-items p{
+        margin-right: 10px;
+        position: relative;
+        display: inline;
       }
 
       .a-items:hover {
@@ -113,6 +129,40 @@
         
         padding: 0 10px 0 23%;
       }
+      .sidebar {
+  width: 15%; /* Adjust the width as needed */
+  background-color: #f8f9fa;
+  padding: 5px 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 1000;
+  overflow-y: auto;
+}
+@media (max-width: 1044px) {
+  .sidebar {
+    width: 70px; /* Adjust as needed for smaller screens */
+  }
+  .logo i{
+    font-size: 15px;
+    padding-left: 0;
+  }
+  .logo{
+    padding: 0 0 0 4px;
+  }
+  .sidebar .a-items p{
+    padding-top:0 ;
+    color: #a45f5fc9;
+    display: none;
+
+  }
+  
+  .container {
+     padding-left: 100px;/* Adjust as needed for smaller screens */
+  }
+}
+
     </style>
   </head>
   <body>
@@ -126,20 +176,20 @@
           <div>
            
             <a class="a-items" href="/index"
-              ><i class="bi bi-house-door-fill"></i>Home</a
+              ><i class="bi bi-house-door-fill"></i><p>Home</p></a
             >
             <a class="a-items" href="/search?name="
-            ><i class="bi bi-search"></i></i>Search</a
+            ><i class="bi bi-search"></i></i><p>Search</p></a
           >
             <a class="a-items" href="/users/friends"
-              ><i class="bi bi-people-fill"></i>Friends</a
+              ><i class="bi bi-people-fill"></i><p>Friends</p></a
             >
             <a class="a-items" href="/post"
-              ><i class="bi bi-plus-circle"></i>Create Post</a
+              ><i class="bi bi-plus-circle"></i><p>Create Post</p></a
             >
             
-              <a class="a-items" href="/users/profile-view"><i class="bi bi-person-circle"></i>Profile</a>
-            <a class="a-items" href="/logout"><i class="bi bi-box-arrow-left"></i>Logout</a></li>
+              <a class="a-items" href="/users/profile-view"><i class="bi bi-person-circle"></i><p>Profile</p></a>
+            <a class="a-items" href="/logout"><i class="bi bi-box-arrow-left"></i><p>Logout</p></a></li>
             
             
             

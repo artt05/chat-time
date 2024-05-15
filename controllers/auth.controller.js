@@ -3,6 +3,8 @@ const User = require("../models/user.model");
 const bcrypt = require("bcryptjs");
 const salt = require("../salt/salt");
 const Post = require("../models/post.model");
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 //For Register Page
 const registerView = (req, res) => {
   res.render("register", {});
@@ -11,8 +13,8 @@ const registerView = (req, res) => {
 //Post Request for Register
 
 const registerUser = (req, res) => {
-  const { name, email, location, password, confirm, safeword } = req.body;
-  if (!name || !email || !password || !confirm || !safeword) {
+  const { name, email, location, password, confirm } = req.body;
+  if (!name || !email || !password || !confirm) {
     res.redirect(
       `/register?error=` +
         encodeURIComponent("Fill empty fields") +
@@ -89,44 +91,16 @@ const loginView = (req, res) => {
 //       email,
 //     });
 //   } else {
-//     res.render("safeword-view", { email });
+// res.render("safeword-view", { email });
 //   }
 // };
 const changePasswordView = (req, res) => {
   const id = req.params.id;
   res.render("changepassword-view", { id });
 };
-const check = async (req, res) => {
-  try {
-    const id = req.params.id;
-    const user = await User.findOne({ _id: id });
-
-    if (!user) {
-      // Handle the case where the user with the specified id is not found
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Generate salt
-
-    // Hash the provided safeword with the generated salt
-    const hashedSafeword = await bcrypt.hash(req.body.safeword, salt);
-
-    if (user.safeword !== hashedSafeword) {
-      return res.redirect(
-        `/safeword-view/${id}?error=` +
-          encodeURIComponent("Wrong safeword, please try again") +
-          `&color=` +
-          encodeURIComponent("danger")
-      );
-    }
-
-    res.redirect(`/changepassword-view/${id}`);
-  } catch (error) {
-    console.error("Error in check function:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+const ForgotPassword = (req, res) => {
+  const { email } = req.body;
 };
-
 const deleteAccount = async (req, res) => {
   const id = req.user._id;
   await Post.deleteMany({ user: id });
@@ -194,8 +168,8 @@ const changePassword = async (req, res) => {
     );
   }
   console.log("arti", id);
-  const { safeword, password, confirm } = req.body;
-  if (!safeword || !password || !confirm) {
+  const { password, confirm } = req.body;
+  if (!password || !confirm) {
     return res.redirect(
       `/changepassword-view/${id}?error=` +
         encodeURIComponent("Please fill in all the fields") +
@@ -206,16 +180,6 @@ const changePassword = async (req, res) => {
   console.log("arti");
   const user = await User.findById(id);
   console.log(user);
-  const hashedSafeword = await bcrypt.hash(safeword, salt);
-  console.log(hashedSafeword);
-  if (hashedSafeword !== user.safeword) {
-    return res.redirect(
-      `/changepassword-view/${id}?error=` +
-        encodeURIComponent("Wrong safeword, please try again") +
-        `&color=` +
-        encodeURIComponent("danger")
-    );
-  }
   if (password !== confirm) {
     return res.redirect(
       `/changepassword-view/${id}?error=` +
@@ -242,7 +206,7 @@ const changePassword = async (req, res) => {
   // });
 
   res.redirect(
-    `/index?error=` +
+    `/login?error=` +
       encodeURIComponent("Password was changed sccsessfuly!") +
       `&color=` +
       encodeURIComponent("success")
@@ -271,9 +235,48 @@ const emailCheck = async (req, res) => {
     );
   } else {
     const id = user._id;
-    res.redirect(`/changepassword-view/${id}`);
+    const token = jwt.sign({ id }, process.env.JWT_SECRET, {
+      expiresIn: "10m",
+    });
+    const url = `http://localhost:8001/check/${token}`;
+    console.log("mrriti");
+    const transporter = nodemailer.createTransport({
+      host: "smtp.titan.email",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.NODEMAILER_EMAIL,
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+    console.log("mrriti1");
+    const mailOptions = {
+      from: process.env.NODEMAILER_EMAIL,
+      to: email,
+      subject: "Reset Password",
+      text: `Click this link to reset your password: ${url}`,
+    };
+    const trans = transporter.sendMail(mailOptions);
+    console.log("mrriti3", trans);
   }
 };
+const check = async (req, res) => {
+  const { token } = req.params;
+  console.log("mrrit", token);
+  jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    if (err) {
+      res.redirect(
+        `/email-view?error=` +
+          encodeURIComponent("Token has expired") +
+          `&color=` +
+          encodeURIComponent("danger")
+      );
+    } else {
+      res.redirect(`/changepassword-view/${decoded.id}`);
+    }
+  });
+};
+
 const loginUser = (req, res) => {
   const { email, password } = req.body;
 

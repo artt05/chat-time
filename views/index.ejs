@@ -1,5 +1,11 @@
 <%- include('layout.ejs'); %>
 <style>
+.container {
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-left: 20%; /* Same as the width of the sidebar */
+}
     .delete-account {
     color: #fff; /* Set text color to white */
     background-color: #d9534f; /* Red background color */
@@ -15,18 +21,26 @@
   /* Center the image and text */
   .profile-info {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    position: relative;
+    flex-direction: row;
+    align-items: left;
     text-align: center;
   }
 
   .profile-info img {
-    width: 100px; /* Set the width as needed */
-    height: 100px; /* Set the height as needed */
+    width: 5%; /* Set the width as needed */
+    height: 5%; /* Set the height as needed */
     object-fit: cover;
     border-radius: 50%;
     margin-bottom: 10px;
   }
+  @media (max-width: 1044px) {
+  
+  
+  .container {
+     padding-left: 100px;/* Adjust as needed for smaller screens */
+  }
+}
 </style>
 <div class="container">
   <div class="row justify-content-center">
@@ -46,7 +60,7 @@
 
         <% if (post.image) { %>
           <% if (post.image.includes(".jpg") || post.image.includes(".png") || post.image.includes(".jpeg")){ %>
-            <img style="width: 60%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
+            <img style="width: 60%; margin-left: 20%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
           <% } else if (post.image.includes(".mp4")){ %>  
             <video width="500px" height="500px" controls="controls">
               <source src="uploads/uploads/<%= post.image %>"type="video/mp4" />
@@ -75,7 +89,7 @@
           </div>
           <% if (post.user.id === user.id) { %>
             <div>
-              <a href="/deletepost/<%= post.id %>"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
+              <a onclick="confirmaAndCallFunction('<%= post.id %>')"> <button type="submit" style="text-align: right;" class="btn btn-danger login-button">Delete</button> </a>
             </div>
           <% } %>
         </div>
@@ -116,17 +130,27 @@
       });
     });
   });
-</script>
-<script>
-  function confirmAndCallFunction() {
-    const userConfirmed = window.confirm("Are you sure you want to delete your account?");
-    if (userConfirmed) {
-      window.location.href = "/deleteAccount";
-    } else {
-      window.location.href = "/index";
-    }
+  function confirmaAndCallFunction(Postid) {
+    swal
+      .fire({
+        title: "Are you sure you want to delete your posth?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Yes, delete it!",
+      })
+      .then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/deletepost/"+Postid;
+        }else{
+          window.location.href = "/index";
+        }
+      });
   }
 </script>
+
 <%- include('alert.ejs'); %>
 </body>
 </html>

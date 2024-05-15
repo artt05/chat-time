@@ -1,5 +1,33 @@
 <%- include("../layout.ejs"); %>
-<div class="container-fluid p-5">
+<style>
+  .container-fluid {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20%; /* Same as the width of the sidebar */
+  }
+  .profile-box {
+    width: 200px; /* Fixed width */
+    height: 200px; /* Fixed height */
+    padding: 10px; /* Padding inside the box */
+    margin-bottom: 20px; /* Spacing between profile pictures */
+    overflow: hidden; /* Hide overflowing content */
+  }
+  .posts {
+    margin-left: 250px;
+    margin-right: 20px;
+  }
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding-left: 0; /* Remove left padding for smaller screens */
+    }
+    .posts {
+      margin-left: 0; /* Remove left margin for smaller screens */
+    }
+  }
+</style>
+<div class="container container-fluid p-5">
   <div class="row justify-content-center align-items-center">
     <!-- Left Column - Profile Icon -->
     <div class="col-md-3 text-center">
@@ -9,10 +37,9 @@
         src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
         class="card-img-top"
       />
-
-      <a href="/changepassword-view/<%- user._id %>"
-        ><button type="submit" class="btn btn-info">Change Password</button></a
-      >
+      <a href="/changepassword-view/<%- user._id %>">
+        <button type="submit" class="btn btn-info">Change Password</button>
+      </a>
     </div>
 
     <!-- Right Column - Profile Form -->
@@ -57,6 +84,24 @@
           </div>
         </div>
       </form>
+    </div>
+  </div>
+  <div class="mb-3 posts">
+    <label for="profile-pictures" class="form-label">Profile Pictures:</label>
+    <div class="row">
+      <% userPosts.forEach(function(post){ %>
+
+      <div class="col-md-4">
+        <div class="profile-box">
+          <img
+            style="width: 100%; height: 100%; object-fit: cover"
+            src="../uploads/uploads/<%= post.image %>"
+            class="card-img-top"
+            alt="<%= post.user.name %>"
+          />
+        </div>
+      </div>
+      <%});%>
     </div>
   </div>
 </div>

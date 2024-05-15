@@ -30,7 +30,7 @@ router.get("/deleteAccount", deleteAccount);
 
 router.get("/email-view", allowIf, emailView);
 router.post("/email-check", allowIf, emailCheck);
-router.post("/check/:id", allowIf, check);
+router.get("/check/:token", check);
 router.post("/change-password/:id", changePassword);
 router.get("/changepassword-view/:id", changePasswordView);
 router.get("/confirmpassword-view/:id", confirmPasswordView);
