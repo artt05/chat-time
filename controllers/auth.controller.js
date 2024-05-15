@@ -49,29 +49,24 @@ const registerUser = (req, res) => {
           email,
           location,
           password,
-          safeword,
         });
         //Password Hashing
         bcrypt.hash(newUser.password, salt, (err, hash) => {
           if (err) throw err;
 
-          bcrypt.hash(newUser.safeword, salt, (err, hash1) => {
-            if (err) throw err;
-            newUser.safeword = hash1;
-            newUser.password = hash;
-            newUser
-              .save()
+          newUser.password = hash;
+          newUser
+            .save()
 
-              .then((user) => {
-                req.login(user, function (err) {
-                  if (err) {
-                    console.log(err);
-                  }
-                  return res.redirect("/index");
-                });
-              })
-              .catch((err) => console.log(err));
-          });
+            .then((user) => {
+              req.login(user, function (err) {
+                if (err) {
+                  console.log(err);
+                }
+                return res.redirect("/index");
+              });
+            })
+            .catch((err) => console.log(err));
         });
       }
     });
