@@ -1,6 +1,6 @@
-const express = require("express");
-const path = require("path");
 const multer = require("multer");
+const AWS = require("aws-sdk");
+const path = require("path");
 
 const allowedMimeTypes = [
   "image/jpeg",
@@ -10,14 +10,17 @@ const allowedMimeTypes = [
   "audio/mp3",
 ];
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./uploads/uploads/"); // Specify the directory where you want to store uploaded files
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Rename the file with a unique name
-  },
+// Configure AWS SDK
+AWS.config.update({
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  region: process.env.AWS_REGION,
 });
+const s3 = new AWS.S3();
+const bucketName = process.env.AWS_BUCKET_NAME;
+
+// Configure Multer for file uploads (without storing locally)
+const storage = multer.memoryStorage(); // Use memory storage for file uploads
 const fileFilter = function (req, file, cb) {
   if (allowedMimeTypes.includes(file.mimetype)) {
     // Continue with the upload
@@ -29,5 +32,37 @@ const fileFilter = function (req, file, cb) {
     return cb(null, false);
   }
 };
-const upload = multer({ storage: storage, fileFilter: fileFilter });
-module.exports = upload;
+const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
+  "image"
+);
+
+// Function to upload file buffer to S3
+const uploadToS3 = function (fileBuffer, fileName, fileType) {
+  return new Promise((resolve, reject) => {
+    if (!fileBuffer || !fileName || !fileType) {
+      return reject("Invalid file data provided.");
+    }
+
+    const params = {
+      Bucket: bucketName,
+      Key: `${Date.now()}${path.extname(fileName)}`, // Unique filename
+      Body: fileBuffer,
+      ContentType: fileType,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.error("Error uploading file:", err);
+        reject(err);
+      } else {
+        console.log(
+          "File uploaded successfully. File location:",
+          data.Location
+        );
+        resolve(data.Location); // Resolve with file location
+      }
+    });
+  });
+};
+
+module.exports = { upload, uploadToS3 };
