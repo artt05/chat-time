@@ -1,6 +1,7 @@
 const multer = require("multer");
 const AWS = require("aws-sdk");
 const path = require("path");
+const sharp = require("sharp"); // Import sharp for image compression
 
 const allowedMimeTypes = [
   "image/jpeg",
@@ -32,9 +33,20 @@ const fileFilter = function (req, file, cb) {
     return cb(null, false);
   }
 };
+
+// Multer middleware for file upload
 const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
   "image"
 );
+
+// Function to resize and compress image
+const resizeAndCompressImage = async (fileBuffer, fileName, fileType) => {
+  const resizedImageBuffer = await sharp(fileBuffer)
+    .resize({ width: 500, height: 700 }) // Set the desired width and height
+    .toBuffer(); // Convert the image to buffer after resizing
+
+  return uploadToS3(resizedImageBuffer, fileName, fileType); // Upload the resized image to S3
+};
 
 // Function to upload file buffer to S3
 const uploadToS3 = function (fileBuffer, fileName, fileType) {
@@ -65,4 +77,4 @@ const uploadToS3 = function (fileBuffer, fileName, fileType) {
   });
 };
 
-module.exports = { upload, uploadToS3 };
+module.exports = { upload, resizeAndCompressImage };

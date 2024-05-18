@@ -60,14 +60,14 @@
 
         <% if (post.image) { %>
           <% if (post.image.includes(".jpg") || post.image.includes(".png") || post.image.includes(".jpeg")){ %>
-            <img style="width: 60%; margin-left: 20%;" src="uploads/uploads/<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
+            <img style="width: 60%; margin-left: 20%;" src="<%= post.image %>" class="card-img-top" alt="<%= post.user.name %>">
           <% } else if (post.image.includes(".mp4")){ %>  
             <video width="500px" height="500px" controls="controls">
-              <source src="uploads/uploads/<%= post.image %>"type="video/mp4" />
+              <source src="<%= post.image %>"type="video/mp4" />
             </video>
           <% } else if (post.image.includes(".mp3")){ %>
             <audio controls>
-              <source src="uploads/uploads/<%= post.image %>" type="audio/mpeg">
+              <source src="<%= post.image %>" type="audio/mpeg">
             </audio>
           <% } %>
         <% } %>

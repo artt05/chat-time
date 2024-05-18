@@ -4,6 +4,7 @@ const protectRoute = (req, res, next) => {
   }
   res.redirect("/login");
 };
+console.log("Hello");
 const allowIf = (req, res, next) => {
   if (!req.isAuthenticated()) {
     return next();
@@ -11,7 +12,9 @@ const allowIf = (req, res, next) => {
   res.redirect("/index");
 };
 const validateUpload = (req, res, next) => {
+  console.log(req.body);
   if (req.fileValidationError) {
+    console.log(req.fileValidationError);
     return res.redirect(
       `/post?error=` +
         encodeURIComponent("You cant post this type of file") +
@@ -24,11 +27,15 @@ const validateUpload = (req, res, next) => {
 };
 const validateUpload2 = (req, res, next) => {
   if (req.body.content) {
+    console.log("arti6");
     if (!req.file) {
+      console.log("arti7");
       next();
     } else if (req.file.size < 500000000) {
+      console.log("arti8");
       next();
     } else {
+      console.log("arti9");
       return res.redirect(
         `/post?error=` +
           encodeURIComponent("File is too big") +
@@ -37,6 +44,7 @@ const validateUpload2 = (req, res, next) => {
       );
     }
   } else {
+    console.log("arti10");
     return res.redirect(
       `/post?error=` +
         encodeURIComponent("Please type something") +

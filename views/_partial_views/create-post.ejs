@@ -43,6 +43,7 @@
       // Call the function to handle content input after image selection
       enterContent(imageFile);
     } else if (dismiss === Swal.DismissReason.ok) {
+      console.log("Image selected but not uploaded");
       // Redirect to home page if "Cancel" is pressed
       window.location.href = "/";
     }

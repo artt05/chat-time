@@ -7,7 +7,7 @@ const createPostView = (req, res) => {
 };
 // Create a new post
 const createPost = async (req, res) => {
-  console.log("filename", req.file.filename);
+  console.log("filename", req.fileLocation);
 
   const { content } = req.body;
   console.log("content", content);
@@ -16,7 +16,7 @@ const createPost = async (req, res) => {
   const newPost = new Post({
     content,
     user: userId,
-    image: req.file ? `${req.file.filename}` : null,
+    image: req.file ? `${req.fileLocation}` : null,
     type: req.file ? req.file.mimetype : null,
   });
 
