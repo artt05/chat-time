@@ -63,7 +63,7 @@ const httpServer = http.createServer(server);
 const socketServer = io(httpServer);
 
 httpServer.listen(PORT, () => {
-  console.log("Server has started at port " + PORT);
+  console.log("Server has started at port " + httpServer, PORT);
 });
 sockets.listen(socketServer);
 

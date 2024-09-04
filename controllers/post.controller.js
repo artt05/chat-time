@@ -1,9 +1,29 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
 const multer = require("multer");
+const fs = require("fs");
 
 const createPostView = (req, res) => {
   res.render("_partial_views/create-post");
+};
+const getPost = (req, res) => {
+  const postId = req.params.postId;
+  console.log("postId", postId);
+  Post.findById(postId)
+    .populate("user", "name")
+    .populate("comments._user", "name")
+    .then((post) => {
+      if (!post) {
+        return res.status(404).json({ error: "Post not found." });
+      }
+
+      res.json({ post });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while finding the post." });
+    });
 };
 // Create a new post
 const createPost = async (req, res) => {
@@ -68,6 +88,36 @@ const likePost = (req, res) => {
         .json({ error: "An error occurred while finding the post." });
     });
 };
+function CommentPost(req, res) {
+  const postId = req.params.postId;
+  const userId = req.user.id;
+  const { comment } = req.body.comment;
+
+  const Post = Post.findById(postId);
+  if (!Post) {
+    return res.status(404).json({ error: "Post not found." });
+  }
+  if (!text) {
+    return res.status(400).json({ error: "Comment text is required." });
+  }
+  if (!userId) {
+    return res.status(401).json({ error: "Unauthorized user." });
+  }
+  Post.comments.push({
+    _user: userId,
+    comment: comment,
+  });
+  Post.save()
+    .then((updatedPost) => {
+      res.json({ post: updatedPost });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while updating the post." });
+    });
+}
+
 function deletePost(req, res) {
   const postId = req.params.postId;
   const userId = req.user.id;
@@ -98,7 +148,12 @@ function deletePost(req, res) {
             encodeURIComponent("danger")
         );
       }
-
+      fs.unlink(post.image, (err) => {
+        if (err) {
+          console.error(err);
+          return;
+        }
+      });
       post
         .delete()
         .then((updatedPost) => {
@@ -121,10 +176,47 @@ function deletePost(req, res) {
         .json({ error: "An error occurred while finding the post." });
     });
 }
+function CommentOnPost(req, res) {
+  const postId = req.params.postId;
+  const userId = req.user.id;
+  const comment = req.body.comment;
+  console.log("comment", comment);
+
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        return res.status(404).json({ error: "Post not found." });
+      }
+
+      post.comments.push({
+        _user: userId,
+        comment: comment,
+      });
+
+      post
+        .save()
+        .then((updatedPost) => {
+          res.json({ post: updatedPost });
+        })
+        .catch((error) => {
+          res
+            .status(500)
+            .json({ error: "An error occurred while updating the post." });
+        });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while finding the post." });
+    });
+}
 
 module.exports = {
+  CommentPost,
   createPost,
   createPostView,
   likePost,
   deletePost,
+  getPost,
+  CommentOnPost,
 };

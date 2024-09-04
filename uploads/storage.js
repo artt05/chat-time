@@ -12,16 +12,20 @@ const allowedMimeTypes = [
 ];
 
 // Configure AWS SDK
-AWS.config.update({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-  region: process.env.AWS_REGION,
-});
-const s3 = new AWS.S3();
+
 const bucketName = process.env.AWS_BUCKET_NAME;
 
 // Configure Multer for file uploads (without storing locally)
-const storage = multer.memoryStorage(); // Use memory storage for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/uploads"); // Save files to 'uploads' folder
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, file.fieldname + "-" + uniqueSuffix + ext); // Generate unique filename
+  },
+}); // Use memory storage for file uploads
 const fileFilter = function (req, file, cb) {
   if (allowedMimeTypes.includes(file.mimetype)) {
     // Continue with the upload
@@ -40,41 +44,7 @@ const upload = multer({ storage: storage, fileFilter: fileFilter }).single(
 );
 
 // Function to resize and compress image
-const resizeAndCompressImage = async (fileBuffer, fileName, fileType) => {
-  const resizedImageBuffer = await sharp(fileBuffer)
-    .resize({ width: 500, height: 700 }) // Set the desired width and height
-    .toBuffer(); // Convert the image to buffer after resizing
-
-  return uploadToS3(resizedImageBuffer, fileName, fileType); // Upload the resized image to S3
-};
 
 // Function to upload file buffer to S3
-const uploadToS3 = function (fileBuffer, fileName, fileType) {
-  return new Promise((resolve, reject) => {
-    if (!fileBuffer || !fileName || !fileType) {
-      return reject("Invalid file data provided.");
-    }
 
-    const params = {
-      Bucket: bucketName,
-      Key: `${Date.now()}${path.extname(fileName)}`, // Unique filename
-      Body: fileBuffer,
-      ContentType: fileType,
-    };
-
-    s3.upload(params, (err, data) => {
-      if (err) {
-        console.error("Error uploading file:", err);
-        reject(err);
-      } else {
-        console.log(
-          "File uploaded successfully. File location:",
-          data.Location
-        );
-        resolve(data.Location); // Resolve with file location
-      }
-    });
-  });
-};
-
-module.exports = { upload, resizeAndCompressImage };
+module.exports = { upload };

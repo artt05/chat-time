@@ -348,9 +348,33 @@ async function removeFriend(req, res) {
 }
 const profileView = async (req, res) => {
   const userId = req.user._id;
+  console.log(userId);
   const user = await User.findById(userId);
+  console.log(user);
   const userPosts = await Post.find({ user: userId });
   res.render("_partial_views/profile-view", { userId, user, userPosts });
+};
+function getUserById(req, res) {
+  const userId = req.params.id;
+  console.log(userId);
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      return res.json({ user });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while finding the user." });
+    });
+}
+const thisUser = async (req, res) => {
+  const userId = req.user._id;
+  const user = await User.findById(userId);
+  res.json(user);
 };
 
 module.exports = {
@@ -366,4 +390,6 @@ module.exports = {
   scrollToBottom,
   removeFriend,
   profileView,
+  getUserById,
+  thisUser,
 };

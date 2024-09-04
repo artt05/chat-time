@@ -1,3 +1,4 @@
+const { compare } = require("bcryptjs");
 const mongoose = require("mongoose");
 
 // Define the Post schema
@@ -18,6 +19,15 @@ const postSchema = new mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+  ],
+  comments: [
+    {
+      comment: String,
+      _user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
     },
   ],
   type: {
