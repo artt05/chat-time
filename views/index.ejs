@@ -12,7 +12,8 @@
         padding-top: 20px;
         padding-right: 20px;
         padding-bottom: 20px;
-        padding-left: 20%; /* Same as the width of the sidebar */
+        padding-left: 20px; /* Same as the width of the sidebar */
+        width: 70%;
       }
       .delete-account {
         color: #fff; /* Set text color to white */
@@ -59,9 +60,12 @@
         width: 100%;
         height: auto;
       }
-      .comments-section {
+      .comments-sectionn {
         max-height: 300px;
         overflow-y: auto;
+
+      }.comments-sectionn a :hover{
+        cursor: pointer;
       }
       #comment-form {
         display: flex;
@@ -133,20 +137,53 @@
       .swal2-popup #comment-form button:hover {
         background-color: #0056b3;
       }
+      .border-bottom {
+        border: 1px solid #ffffff;
+      }
+      .list-group{
+        width:50%;
+        margin:0 auto;
+        
+      }
+      .list-group-item{
+        margin-top: 0.2vh !important;
+      }
+      .image-container {
+    width: 465px; /* Set your desired width */
+    height: 100%; /* Set your desired height */
+    max-height: 550px;
+    min-height: 280px;
+    background-color: black; /* Black background for extra space */
+    display: flex; /* Center image horizontally and vertically */
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    border: 0.7px solid #ccc;
+    overflow: hidden; /* Crop the image if it is larger than the container */
+}
+
+.image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: scale-down; /* Scale the image down without distortion, keeping the original size */
+}
+.content {
+  margin-bottom: 0.1rem ;
+
+}
     </style>
   </head>
   <body>
     <div class="container">
       <div class="row justify-content-center">
-        <h2 style="text-transform: capitalize"><%- user.name %></h2>
       </div>
       <br /><br />
-      <h1>Posts</h1>
       <ul class="list-group">
         <% posts.forEach(function(post) { %>
-        <li class="list-group-item my-1">
+        <li class="list-group-item border-bottom my-3">
           <div class="profile-info">
             <img
+              class="post-image"
               src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
               class="card-img-top"
               alt="<%= post.user.name %>"
@@ -155,12 +192,12 @@
           </div>
           <% if (post.image) { %> <% if (post.image.includes(".jpg") ||
           post.image.includes(".png") || post.image.includes(".jpeg")){ %>
-          <img
-            style="width: 60%; margin-left: 20%"
+         <div class="image-container"> <img
+            style=""
             src="<%= post.image %>"
             class="card-img-top"
             alt="<%= post.user.name %>"
-          />
+          /></div>
           <% } else if (post.image.includes(".mp4")){ %>
           <video width="500px" height="500px" controls="controls">
             <source src="<%= post.image %>" type="video/mp4" />
@@ -170,9 +207,7 @@
             <source src="<%= post.image %>" type="audio/mpeg" />
           </audio>
           <% } %> <% } %>
-          <div style="max-width: 900px; word-wrap: break-word">
-            <p><%= post.content %></p>
-          </div>
+          
           <div class="d-flex justify-content-between">
             <div>
               <button
@@ -193,19 +228,24 @@
               </button>
             </div>
             <% if (post.user.id === user.id) { %>
-            <div>
+            <!-- <div>
               <a onclick="confirmaAndCallFunction('<%= post.id %>')">
                 <button
                   type="submit"
-                  style="text-align: right"
+                  style="text-align: right; margin-top: 20px;"
                   class="btn btn-danger login-button"
                 >
                   Delete
                 </button>
               </a>
-            </div>
+            </div> -->
             <% } %>
           </div>
+          <div style="max-width: 900px; word-wrap: break-word ">
+            <p class="content"><strong><%= post.user.name %> </strong><%= post.content %></p>
+          </div>
+          <div class="comments-sectionn">
+            <a onclick="openCommentPost('<%= post.id %>')" ><span>View all <%= post.comments.length %> Comments</span></a>
         </li>
         <% }); %>
       </ul>
