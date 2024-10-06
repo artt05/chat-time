@@ -34,7 +34,27 @@ mongoose
   .catch((err) => console.log(err));
 
 const server = express();
-server.use(helmet());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'",
+        "https://code.jquery.com",
+        "https://maxcdn.bootstrapcdn.com",
+        "https://cdn.jsdelivr.net",
+      ],
+      styleSrc: [
+        "'self'",
+        "https://maxcdn.bootstrapcdn.com",
+        "https://cdn.jsdelivr.net",
+      ],
+      imgSrc: ["'self'", "data:"],
+      fontSrc: ["'self'", "https://maxcdn.bootstrapcdn.com"],
+      // Add any other needed external domains here
+    },
+  })
+);
 server.use(express.static("public"));
 
 server.set("view engine", "ejs");
