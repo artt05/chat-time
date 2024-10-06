@@ -49,6 +49,7 @@ const registerUser = (req, res) => {
           email,
           location,
           password,
+          profilePicture: null,
         });
         //Password Hashing
         bcrypt.hash(newUser.password, salt, (err, hash) => {

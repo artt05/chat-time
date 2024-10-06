@@ -10,7 +10,7 @@ const indexView = async (req, res) => {
     const user = await User.findById(userId);
     Post.find()
       .sort({ _id: -1 })
-      .populate("user", "name")
+      .populate("user", "name profilePicture")
       .exec()
       .then((posts) => {
         res.render("index", { posts, user });
@@ -376,6 +376,26 @@ const thisUser = async (req, res) => {
   const user = await User.findById(userId);
   res.json(user);
 };
+async function IdProfileView(req, res) {
+  const userId = req.params.id;
+  const userPosts = await Post.find({ user: userId });
+  User.findById(userId)
+    .then((user) => {
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+
+      return res.render("./_partial_views/UserProfileView", {
+        user,
+        userPosts,
+      });
+    })
+    .catch((error) => {
+      res
+        .status(500)
+        .json({ error: "An error occurred while finding the user." });
+    });
+}
 
 module.exports = {
   indexView,
@@ -392,4 +412,5 @@ module.exports = {
   profileView,
   getUserById,
   thisUser,
+  IdProfileView,
 };

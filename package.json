@@ -21,6 +21,7 @@
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "express-session": "^1.17.2",
+    "helmet": "^8.0.0",
     "httpa": "^1.0.1",
     "https": "^1.0.0",
     "jsonwebtoken": "^9.0.2",

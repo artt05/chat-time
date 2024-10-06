@@ -31,12 +31,18 @@
   <div class="row justify-content-center align-items-center">
     <!-- Left Column - Profile Icon -->
     <div class="col-md-3 text-center">
-      <h1>Profile Picture</h1>
-      <img
-        style="width: 100%"
-        src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
-        class="card-img-top"
-      />
+      <a href="/post-profile"
+        ><img
+          style="
+            width: 70%;
+            border-radius: 50%;
+            height: 300px;
+            object-fit: cover;
+          "
+          src="../<%= user.profilePicture %>"
+          class="card-img-top"
+      /></a>
+
       <a href="/changepassword-view/<%- user._id %>">
         <button type="submit" class="btn btn-info">Change Password</button>
       </a>

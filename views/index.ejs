@@ -7,188 +7,45 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
     />
-    <style>
-      .container {
-        padding-top: 20px;
-        padding-right: 20px;
-        padding-bottom: 20px;
-        padding-left: 20px; /* Same as the width of the sidebar */
-        width: 70%;
-      }
-      .delete-account {
-        color: #fff; /* Set text color to white */
-        background-color: #d9534f; /* Red background color */
-        border-color: #d43f3a; /* Red border color */
-        border-radius: 5px;
-      }
-      .delete-account:hover {
-        background-color: #c9302c; /* Slightly lighter red on hover */
-        border-color: #ac2925; /* Slightly lighter red border on hover */
-      }
-      /* Center the image and text */
-      .profile-info {
-        display: flex;
-        position: relative;
-        flex-direction: row;
-        align-items: left;
-        text-align: center;
-      }
-      .profile-info img {
-        width: 5%; /* Set the width as needed */
-        height: 5%; /* Set the height as needed */
-        object-fit: cover;
-        border-radius: 50%;
-        margin-bottom: 10px;
-      }
-      @media (max-width: 1044px) {
-        .container {
-          padding-left: 100px; /* Adjust as needed for smaller screens */
-        }
-      }
-      .post-container {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-      }
-      .left-column {
-        flex: 1;
-      }
-      .right-column {
-        flex: 2;
-      }
-      .post-image {
-        width: 100%;
-        height: auto;
-      }
-      .comments-sectionn {
-        max-height: 300px;
-        overflow-y: auto;
+    <link rel="stylesheet" href="/index.css">
 
-      }.comments-sectionn a :hover{
-        cursor: pointer;
-      }
-      #comment-form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      #comment-text {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      #comment-form button {
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      #comment-form button:hover {
-        background-color: #0056b3;
-      }
-      /* New Styles for Comment Swal */
-      .swal2-popup .post-container {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
-        width: 100%;
-      }
-      .swal2-popup .left-column {
-        flex: 1;
-      }
-      .swal2-popup .right-column {
-        flex: 2;
-      }
-      .swal2-popup .post-image {
-        width: 100%;
-        height: auto;
-      }
-      .swal2-popup .comments-section {
-        max-height: 300px;
-        overflow-y: auto;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        margin-top: 10px;
-      }
-      .swal2-popup #comment-form {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-top: 10px;
-      }
-      .swal2-popup #comment-text {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-      }
-      .swal2-popup #comment-form button {
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-      }
-      .swal2-popup #comment-form button:hover {
-        background-color: #0056b3;
-      }
-      .border-bottom {
-        border: 1px solid #ffffff;
-      }
-      .list-group{
-        width:50%;
-        margin:0 auto;
-        
-      }
-      .list-group-item{
-        margin-top: 0.2vh !important;
-      }
-      .image-container {
-    width: 465px; /* Set your desired width */
-    height: 100%; /* Set your desired height */
-    max-height: 550px;
-    min-height: 280px;
-    background-color: black; /* Black background for extra space */
-    display: flex; /* Center image horizontally and vertically */
-    justify-content: center;
-    align-items: center;
-    border-radius: 5px;
-    border: 0.7px solid #ccc;
-    overflow: hidden; /* Crop the image if it is larger than the container */
-}
-
-.image-container img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: scale-down; /* Scale the image down without distortion, keeping the original size */
-}
-.content {
-  margin-bottom: 0.1rem ;
-
-}
-    </style>
   </head>
   <body>
     <div class="container">
-      <div class="row justify-content-center">
-      </div>
+      
       <br /><br />
       <ul class="list-group">
         <% posts.forEach(function(post) { %>
         <li class="list-group-item border-bottom my-3">
           <div class="profile-info">
+            <% if (post.user.profilePicture) { %>
             <img
               class="post-image"
-              src="https://static.vecteezy.com/system/resources/previews/005/544/718/original/profile-icon-design-free-vector.jpg"
+              style=""
+              
+              src="<%= post.user.profilePicture %>"
               class="card-img-top"
               alt="<%= post.user.name %>"
             />
-            <div><%= post.user.name %></div>
+            <% } else { %>
+              <img
+              class="post-image"
+              style=""
+              
+              src=""
+              class="card-img-top"
+              alt="<%= post.user.name %>"
+            
+            />
+            <% } %>
+             
+            <div style="font-weight: 500; margin-left: 7px;">
+              <% if (post.user.id === user.id) { %>
+              <a href="/users/profile-view" class="username"><%= post.user.name %></a>
+              <% } else { %>
+                <a href="/users/profile-view/<%=post.user.id%>" class="username"><%= post.user.name %></a>
+              <% } %>
+            </div>
           </div>
           <% if (post.image) { %> <% if (post.image.includes(".jpg") ||
           post.image.includes(".png") || post.image.includes(".jpeg")){ %>
@@ -253,175 +110,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-      $(document).ready(function () {
-        $(".dropdown-toggle").on("click", function () {
-          const gearIcon = $(this).find(".bi-gear");
-          gearIcon.toggleClass("spin-on-click");
-          setTimeout(function () {
-            gearIcon.removeClass("spin-on-click");
-          }, 500); // Adjust the delay (in milliseconds) based on your transition duration
-        });
-
-        $(".like-button").click(function () {
-          var postId = $(this).data("postid");
-          var liked = $(this).data("liked");
-          var button = $(this);
-
-          $.ajax({
-            type: "PUT",
-            url: "/post/" + postId + "/like",
-            data: { liked: liked },
-            success: function (data) {
-              button.html(
-                data.liked
-                  ? `${data.post.likes.length} <i class="bi bi-heart-fill"></i>`
-                  : `${data.post.likes.length} <i class="bi bi-heart"></i>`
-              );
-              button.data("liked", data.liked);
-            },
-            error: function (error) {
-              console.log(error);
-            },
-          });
-        });
-      });
-
-      function confirmaAndCallFunction(Postid) {
-        Swal.fire({
-          title: "Are you sure you want to delete your post?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-        }).then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/deletepost/" + Postid;
-          } else {
-            window.location.href = "/index";
-          }
-        });
-      }
-
-      async function openCommentPost(postId) {
-    console.log(`Fetching post with ID: ${postId}`);
-    try {
-      
-        const response = await fetch(`/post/${postId}`);
-
-        
-        // Log the response status
-        console.log("Post fetch status:", response.status);
-
-        // Check if the response is OK (status code 200-299)
-        if (!response.ok) {
-            const errorText = await response.text();  // Get the response text for more details
-            console.error(`Error fetching post: ${response.status} - ${errorText}`);
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        
-        // Log the content type to ensure it's JSON
-        const contentType = response.headers.get("content-type");
-        console.log("Content-Type:", contentType);
-        
-        if (contentType && contentType.includes("application/json")) {
-            const postData = await response.json();  // Attempt to parse JSON
-            console.log("Parsed JSON for post data:", postData);
-
-            if (!postData) {
-                Swal.fire("Error", "Could not fetch post and comments.", "error");
-                return;
-            }
-            const postHtml = `
-      <div class="post-container">
-        <div class="left-column">
-          <img src="${postData.post.image}" alt="Post Image" class="post-image">
-        </div>
-        <div class="right-column">
-          <p>${postData.post.content}</p>
-          <div class="comments-section" id="comments-section">
-            
-          </div>
-          <form id="comment-form">
-            <input type="text" id="comment-text" placeholder="Type your comment here...">
-            <button type="submit">Submit</button>
-          </form>
-        </div>
-      </div>
-    `;
-
-    Swal.fire({
-        title: "Post and Comments",
-        html: postHtml,
-        showCloseButton: true,
-        showConfirmButton: false,
-        focusConfirm: true,
-    });
-            try{
-              if (postData.post.comments.length > 0) {
-        for (const comment of postData.post.comments) {
-            const userId = comment._user._id;
-            const response = await fetch(`/users/${userId}/get`);
-            const user = await response.json();
-            document.getElementById("comments-section").innerHTML += `<p><strong>${user.user.name}</strong>: ${comment.comment}</p>`;
-        }
-    } else {
-        document.getElementById("comments-section").innerHTML = "<strong>No Comments yet</strong>";
-    }       
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-            Swal.fire("Error", "There was an issue fetching the user data. Please try again.", "error");
-        }
-        } else {
-            console.error("Received non-JSON response for the post.");
-            throw new Error("Received non-JSON response");
-        }
-    } catch (error) {
-        console.error("Error fetching post or user data:", error);
-        Swal.fire("Error", "There was an issue fetching the post or user data. Please try again.", "error");
-    }
-}
-    document.getElementById("comment-form").addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const commentText = document.getElementById("comment-text").value;
-        try {
-            const userResponse = await fetch("/user");
-            if (!userResponse.ok) {
-                const errorText = await userResponse.text();
-                console.error(`Error fetching user data: ${userResponse.status} - ${errorText}`);
-                throw new Error(`HTTP error! Status: ${userResponse.status}`);
-            }
-
-            const user = await userResponse.json();
-            const newCommentHtml = `<p><strong>${user.name}</strong>: ${commentText}</p>`;
-            const commentsSection = document.getElementById("comments-section");
-
-            if (commentsSection.innerText.trim() === "No Comments yet") {
-                commentsSection.innerHTML = newCommentHtml;
-            } else {
-                commentsSection.innerHTML += newCommentHtml;
-            }
-
-            document.getElementById("comment-text").value = '';
-
-              await fetch(`/post/${postId}/comment`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ comment: commentText }),
-        });
-        } catch (error) {
-            console.error("Error posting comment:", error);
-            Swal.fire("Error", "There was an issue posting your comment. Please try again.", "error");
-        }
-    });
-
-
-
-
+    <script src="/index.js">
     </script>
 
     <%- include('alert.ejs'); %>

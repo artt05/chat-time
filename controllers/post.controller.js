@@ -6,6 +6,9 @@ const fs = require("fs");
 const createPostView = (req, res) => {
   res.render("_partial_views/create-post");
 };
+const createProfileView = (req, res) => {
+  res.render("_partial_views/profile-picture");
+};
 const getPost = (req, res) => {
   const postId = req.params.postId;
   console.log("postId", postId);
@@ -48,6 +51,17 @@ const createPost = async (req, res) => {
     .catch((error) => {
       res.status(500).json({ error: error });
     });
+};
+const createProfile = async (req, res) => {
+  console.log("filename", req.fileLocation);
+
+  const userId = req.user.id; // Assuming the authenticated user's ID is stored in req.user.id
+  const user = await User.findById(userId);
+  user.profilePicture = req.fileLocation;
+
+  user.save().then((savedUser) => {
+    res.status(201).json({ user: savedUser });
+  });
 };
 
 // Like a post
@@ -219,4 +233,6 @@ module.exports = {
   deletePost,
   getPost,
   CommentOnPost,
+  createProfileView,
+  createProfile,
 };

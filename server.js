@@ -33,6 +33,7 @@ mongoose
   .catch((err) => console.log(err));
 
 const server = express();
+
 server.use(express.static("public"));
 
 server.set("view engine", "ejs");

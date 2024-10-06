@@ -1,0 +1,89 @@
+<%- include("../layout.ejs"); %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<style>
+  /* Custom styles for SweetAlert modals */
+  .swal2-popup {
+    border-radius: 10px;
+  }
+
+  .swal2-title {
+    font-size: 24px;
+  }
+
+  .swal2-content {
+    font-size: 18px;
+  }
+
+  .swal2-input,
+  .swal2-file {
+    width: 100%;
+    margin: 10px 0;
+  }
+
+  .swal2-file {
+    padding: 20px;
+  }
+</style>
+
+<script>
+  // Function to handle image selection
+  async function selectImage() {
+    const { value: imageFile, dismiss } = await Swal.fire({
+      title: 'Select Profile Picture',
+      input: 'file',
+      inputAttributes: {
+        accept: 'image/*',
+        'aria-label': 'Upload an image',
+      },
+    });
+
+    
+  
+
+  // Function to handle content input
+ 
+
+    
+      // At this point, you have both the image file and content
+      // Perform further actions, e.g., post creation using an API
+      const formData = new FormData();
+      formData.append('image', imageFile);
+
+      // Assuming you have an API endpoint to handle post creation
+      await fetch("/post-profile-upload", {
+        method: "POST",
+        body: formData,
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Show success message
+        Swal.fire({
+          title: "Success!",
+          text: "Post created successfully!",
+          icon: "success",
+        }).then(() => {
+          // Redirect to home page
+          window.location.href = "/users/profile-view";
+        });
+
+        // You can redirect or perform additional actions after success
+        // window.location.href = "/"; // Redirect to home page, for example
+      })
+      .catch(error => {
+        // Handle errors and show appropriate alert
+        Swal.fire({
+          title: "Error",
+          text: "Failed to create post!",
+          icon: "error",
+        });
+      });
+    }
+
+  // Trigger the selectImage function when the page loads
+  window.onload = selectImage;
+</script>
+
+<%- include("../alert.ejs"); %>
+</body>
+</html>

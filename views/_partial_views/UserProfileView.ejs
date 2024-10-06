@@ -1,0 +1,111 @@
+<%- include("../layout.ejs"); %>
+<style>
+  .container-fluid {
+    padding-top: 20px;
+    padding-right: 20px;
+    padding-bottom: 20px;
+    padding-left: 20%; /* Same as the width of the sidebar */
+  }
+  .profile-box {
+    width: 200px; /* Fixed width */
+    height: 200px; /* Fixed height */
+    padding: 10px; /* Padding inside the box */
+    margin-bottom: 20px; /* Spacing between profile pictures */
+    overflow: hidden; /* Hide overflowing content */
+  }
+  .posts {
+    margin-left: 250px;
+    margin-right: 20px;
+  }
+  .profile-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 150px;    /* Set the desired width for the container */
+    height: 150px;   /* Set the same height to make it square */
+    overflow: hidden; /* Ensure anything outside the container is hidden */
+    border-radius: 50%;  /* Make the container a perfect circle */
+}
+
+  @media (max-width: 768px) {
+    .container-fluid {
+      padding-left: 0; /* Remove left padding for smaller screens */
+    }
+    .posts {
+      margin-left: 0; /* Remove left margin for smaller screens */
+    }
+  }
+</style>
+<div class="container container-fluid p-5">
+  <div class="row justify-content-center align-items-center">
+    <!-- Left Column - Profile Icon -->
+    <div class="col-md-3 text-center">
+        <div class="profile-container">
+            <a href="/post-profile">
+                <img
+                    style="
+                        width: 70%;
+                        border-radius: 50%;
+                        height: 300px;
+                        object-fit: cover; /* Or use 'contain' if you don't want cropping */
+                    "
+                    src="../../<%= user.profilePicture %>"
+                    class="card-img-top"
+                />
+            </a>
+        </div>
+        
+
+      <!-- Right Column - Profile Form -->
+      
+
+          <!-- Other Fields -->
+          <!-- Add additional form fields as needed -->
+
+          <!-- Submit Button -->
+         
+       
+      </div>
+    </div>
+    <div class="mb-3 posts">
+      <label for="profile-pictures" class="form-label">Profile Pictures:</label>
+      <div class="row">
+        <% userPosts.forEach(function(post){ %>
+
+        <div class="col-md-4">
+          <div class="profile-box">
+            <img
+              style="width: 100%;     
+              height: 100%;   
+              object-fit: cover;"
+              src="../<%=post.image%>"
+              class="card-img-top"
+              alt="<%= post.user.name %>"
+            />
+          </div>
+        </div>
+        <%});%>
+      </div>
+    </div>
+  </div>
+  <script>
+    function confirmAndCallFunction() {
+      swal
+        .fire({
+          title: "Are you sure you want to delete your account?",
+          text: "You won't be able to revert this!",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#d33",
+          cancelButtonColor: "#3085d6",
+          confirmButtonText: "Yes, delete it!",
+        })
+        .then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/deleteAccount";
+          }
+        });
+    }
+  </script>
+  <%- include("../alert.ejs"); %>
+</div>
