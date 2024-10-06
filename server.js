@@ -10,7 +10,6 @@ const passport = require("passport");
 const { loginCheck } = require("./auth/passport");
 const User = require("./models/user.model");
 const sockets = require("./socket"); // Import your socket.js file
-const { default: helmet } = require("helmet");
 
 dotenv.config();
 
@@ -34,27 +33,6 @@ mongoose
   .catch((err) => console.log(err));
 
 const server = express();
-server.use(
-  helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: [
-        "'self'",
-        "https://code.jquery.com",
-        "https://maxcdn.bootstrapcdn.com",
-        "https://cdn.jsdelivr.net",
-      ],
-      styleSrc: [
-        "'self'",
-        "https://maxcdn.bootstrapcdn.com",
-        "https://cdn.jsdelivr.net",
-      ],
-      imgSrc: ["'self'", "data:"],
-      fontSrc: ["'self'", "https://maxcdn.bootstrapcdn.com"],
-      // Add any other needed external domains here
-    },
-  })
-);
 server.use(express.static("public"));
 
 server.set("view engine", "ejs");
