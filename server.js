@@ -34,7 +34,7 @@ mongoose
   .catch((err) => console.log(err));
 
 const server = express();
-app.use(
+server.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
