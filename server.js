@@ -10,6 +10,7 @@ const passport = require("passport");
 const { loginCheck } = require("./auth/passport");
 const User = require("./models/user.model");
 const sockets = require("./socket"); // Import your socket.js file
+const { default: helmet } = require("helmet");
 
 dotenv.config();
 
@@ -33,7 +34,7 @@ mongoose
   .catch((err) => console.log(err));
 
 const server = express();
-
+server.use(helmet());
 server.use(express.static("public"));
 
 server.set("view engine", "ejs");
