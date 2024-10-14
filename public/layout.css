@@ -39,6 +39,9 @@ body {
   transition: backround-color 0.5s, color 0.2s;
   border-radius: 10px;
 }
+.a-items:last-child {
+  margin-top: auto;
+}
 .a-items i p {
   align-content: center;
   font-size: 17px;
@@ -79,10 +82,11 @@ body {
   width: 80%;
 }
 .navbar-1 {
-  justify-content: space-between;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
   margin: 0 auto;
 }
+
 .logo {
   font-family: "Times new roman", sans-serif;
   font-size: 25px;
@@ -90,7 +94,7 @@ body {
   color: #000000;
   text-decoration: none;
 
-  padding: 0 0 0 23%;
+  padding: 0 0 0 15%;
 }
 .logo:hover {
   font-family: "Times new roman", sans-serif;
@@ -152,6 +156,9 @@ body {
     color: #a45f5fc9;
     display: none;
   }
+  .dropdown-content {
+    left: -90% !important;
+  }
 }
 @media (max-width: 450px) {
   .sidebar {
@@ -165,4 +172,41 @@ body {
     padding: 10px;
     justify-content: center;
   }
+}
+.profile-image {
+  width: 23px; /* Set the width as needed */
+  height: 23px; /* Set the height as needed */
+  object-fit: cover;
+  border-radius: 50%;
+  margin-right: 7px;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  bottom: 100%; /* Position above the profile icon */
+  left: 0;
+  background-color: #f1f1f1;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 10px 0;
+}
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.dropdown {
+  margin-top: auto;
+}
+.personi::before {
+  font-size: 33px;
 }

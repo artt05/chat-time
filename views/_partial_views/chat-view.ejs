@@ -4,6 +4,7 @@
     .container {
       max-width: 600px;
       margin: auto;
+      margin-top: 30px;
     }
   
     .chat-box {
@@ -122,6 +123,7 @@
     }
   
     .form-group {
+      display: flex;
       margin-bottom: 15px;
     }
   
@@ -137,6 +139,25 @@
       margin: 4px 2px;
       cursor: pointer;
       border-radius: 5px;
+    }
+    .permi 
+    {
+      display: flex;
+      align-items: center;
+      margin-bottom: 9px;
+    }
+    #typing {
+      margin-left: 10px;
+    }
+    .form-control {
+      margin-top: 4px;
+      height: 45px;
+    }
+    .profile {
+      width: 47px;
+      height: 47px;
+      border-radius: 50%;
+      margin-right: 10px;
     }
   </style>
   <script src="https://cdn.socket.io/4.0.1/socket.io.min.js" integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU" crossorigin="anonymous"></script>
@@ -174,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
     li.innerHTML = `
     
       <span class="${timestampType}">${currentTimestamp}:</span>
-      <span class="sender">${messageType === 'sent' ? 'Me' : '<%= user.name %>'}:</span>
+      <span class="sender">${messageType === 'sent' ? 'Me' : '<%= user2.name %>'}:</span>
       <span class="message-content">${data.message}</span>`;
 
     ul.appendChild(li);
@@ -254,8 +275,10 @@ chatBox.scrollTop = chatBox.scrollHeight;
   <script src="https://cdn.socket.io/4.0.1/socket.io.min.js" integrity="sha384-LzhRnpGmQP+lOvWruF/lgkcqD+WDVt9fU3H4BWmwP5u5LTmkUGafMcpZKNObVMLU" crossorigin="anonymous"></script>
 
   <div class="container">
-    <h1>Chat with <%= user.name %></h1>
+    <div class="permi">
+   <% if (user2.profilePicture) { %> <img class="profile" src="../<%= user2.profilePicture %>" alt=""><% } else { %> <i class="bi bi-person-circle" style="font-size: 47px; margin-right: 10px;"></i> <% } %><h1><%= user2.name %></h1>
     <span class="message-content" id="typing" style="display: none;">Typing...</span>
+    </div>
     <!-- Display existing messages -->
     <div class="chat-box" id="chatBox">
       
@@ -277,7 +300,7 @@ chatBox.scrollTop = chatBox.scrollHeight;
               <span class="receiver"><%= sentMessage.timestamp %>:</span>
               <span class ="message-content" style ="display: none;">Typing...</span>
               <!-- <hr class="right-hr"> -->
-              <span class="sender"><%= user.name %>:</span>
+              <span class="sender"><%= user2.name %>:</span>
               <span class="message-content">
                 <%= sentMessage.message %>
               </span>
@@ -291,9 +314,9 @@ chatBox.scrollTop = chatBox.scrollHeight;
     <!-- Message input form -->
     <form action="/users/<%= UserId %>/send-message" method="post" id="messagesForm" class="message-form">
       <div class="form-group">
-        <input class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></input>
+        <input class="form-control" id="message" name="message" rows="3" placeholder="Type your message here..."></input><button type="submit" class="btn btn-primary">Send</button>
       </div>
-      <button type="submit" class="btn btn-primary">Send</button>
+      
     </form>
   </div>
   <!-- ... WebSocket script ... -->

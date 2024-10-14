@@ -1,10 +1,10 @@
 <%- include("../layout.ejs"); %>
 <style>
-  .container-fluid {
+  .container {
     padding-top: 20px;
     padding-right: 20px;
     padding-bottom: 20px;
-    padding-left: 20%; /* Same as the width of the sidebar */
+    padding-left: 15%; /* Same as the width of the sidebar */
   }
   .profile-box {
     width: 200px; /* Fixed width */
@@ -13,11 +13,9 @@
     margin-bottom: 20px; /* Spacing between profile pictures */
     overflow: hidden; /* Hide overflowing content */
   }
-  .posts {
-    margin-left: 250px;
-    margin-right: 20px;
+  .profile {
+    margin-left: 5%;
   }
-
   @media (max-width: 768px) {
     .container-fluid {
       padding-left: 0; /* Remove left padding for smaller screens */
@@ -27,71 +25,27 @@
     }
   }
 </style>
-<div class="container container-fluid p-5">
-  <div class="row justify-content-center align-items-center">
+<div class="container">
+  <div class="d-flex">
     <!-- Left Column - Profile Icon -->
-    <div class="col-md-3 text-center">
+    <div class="profile">
       <a href="/post-profile"
         ><img
           style="
-            width: 70%;
+            width: 137px;
             border-radius: 50%;
-            height: 300px;
+            height: 137px;
             object-fit: cover;
+            margin-bottom: 30px;
           "
           src="../<%= user.profilePicture %>"
           class="card-img-top"
       /></a>
-
-      <a href="/changepassword-view/<%- user._id %>">
-        <button type="submit" class="btn btn-info">Change Password</button>
-      </a>
-    </div>
-
-    <!-- Right Column - Profile Form -->
-    <div class="col-md-8">
-      <form action="/update-profile" method="post" class="p-4">
-        <h2 class="mb-4">Profile Settings</h2>
-
-        <!-- Email Field -->
-        <div class="mb-3">
-          <label for="email" class="form-label">Name:</label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            class="form-control"
-            placeholder="Your Name"
-            required
-            value="<%= user.name %>"
-          />
-          <label for="email" class="form-label">Email:</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            class="form-control"
-            placeholder="Your Email"
-            value="<%= user.email %>"
-            required
-          />
-        </div>
-
-        <!-- Other Fields -->
-        <!-- Add additional form fields as needed -->
-
-        <!-- Submit Button -->
-        <div class="d-flex justify-content-between">
-          <button type="submit" class="btn btn-primary">Save Changes</button>
-          <div>
-            <a class="btn btn-danger" onclick="confirmAndCallFunction()">
-              Delete Account
-            </a>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
+
+  <!-- Right Column - Profile Form -->
+
   <div class="mb-3 posts">
     <label for="profile-pictures" class="form-label">Profile Pictures:</label>
     <div class="row">
@@ -109,25 +63,26 @@
       </div>
       <%});%>
     </div>
+
+    <script>
+      function confirmAndCallFunction() {
+        swal
+          .fire({
+            title: "Are you sure you want to delete your account?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+          })
+          .then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/deleteAccount";
+            }
+          });
+      }
+    </script>
+    <%- include("../alert.ejs"); %>
   </div>
 </div>
-<script>
-  function confirmAndCallFunction() {
-    swal
-      .fire({
-        title: "Are you sure you want to delete your account?",
-        text: "You won't be able to revert this!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#d33",
-        cancelButtonColor: "#3085d6",
-        confirmButtonText: "Yes, delete it!",
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          window.location.href = "/deleteAccount";
-        }
-      });
-  }
-</script>
-<%- include("../alert.ejs"); %>

@@ -8,12 +8,13 @@ const indexView = async (req, res) => {
 
   try {
     const user = await User.findById(userId);
+    const page = "index";
     Post.find()
       .sort({ _id: -1 })
       .populate("user", "name profilePicture")
       .exec()
       .then((posts) => {
-        res.render("index", { posts, user });
+        res.render("index", { posts, user, page });
       })
       .catch((error) => {
         res
@@ -26,6 +27,7 @@ const indexView = async (req, res) => {
 };
 const searchView = async (req, res) => {
   try {
+    const user = await User.findById(req.user._id);
     const users = await User.find({ name: { $regex: `^${req.query.name}$` } });
     const query = req.query.name;
     console.log("art", query);
@@ -39,6 +41,7 @@ const searchView = async (req, res) => {
     }
 
     res.render("_partial_views/search-results", {
+      user,
       users,
       currentUser: req.user,
       query,
@@ -229,13 +232,16 @@ const chatView = async (req, res) => {
         reciverId: message.reciverId,
       }))
       .sort((a, b) => a.timestamp - b.timestamp);
+
     // Corrected sorting
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.user._id);
+    const user2 = await User.findById(req.params.id);
     const user1 = req.user.id;
     const UserId = req.params.id;
     res.render("_partial_views/chat-view", {
-      user1,
       user,
+      user1,
+      user2,
       UserId,
       sentMessages,
       receivedMessages,
@@ -254,7 +260,7 @@ const allFriendsView = async (req, res) => {
       "email",
     ]);
 
-    res.render("_partial_views/friends", { friends: user.friends });
+    res.render("_partial_views/friends", { friends: user.friends, user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Something went wrong" });
@@ -377,16 +383,18 @@ const thisUser = async (req, res) => {
   res.json(user);
 };
 async function IdProfileView(req, res) {
+  const user = await User.findById(req.user._id);
   const userId = req.params.id;
   const userPosts = await Post.find({ user: userId });
   User.findById(userId)
-    .then((user) => {
+    .then((user1) => {
       if (!user) {
         return res.status(404).json({ error: "User not found." });
       }
 
       return res.render("./_partial_views/UserProfileView", {
         user,
+        user1,
         userPosts,
       });
     })
@@ -396,6 +404,11 @@ async function IdProfileView(req, res) {
         .json({ error: "An error occurred while finding the user." });
     });
 }
+const settingsView = async (req, res) => {
+  const userId = req.user._id;
+  const user = await User.findById(userId);
+  res.render("_partial_views/settings", { user });
+};
 
 module.exports = {
   indexView,
@@ -413,4 +426,5 @@ module.exports = {
   getUserById,
   thisUser,
   IdProfileView,
+  settingsView,
 };

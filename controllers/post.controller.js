@@ -4,10 +4,12 @@ const multer = require("multer");
 const fs = require("fs");
 
 const createPostView = (req, res) => {
-  res.render("_partial_views/create-post");
+  const user = User.findById(req.user.id);
+  res.render("_partial_views/create-post", { user });
 };
 const createProfileView = (req, res) => {
-  res.render("_partial_views/profile-picture");
+  const user = User.findById(req.user.id);
+  res.render("_partial_views/profile-picture", { user });
 };
 const getPost = (req, res) => {
   const postId = req.params.postId;

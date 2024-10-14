@@ -45,11 +45,10 @@
  
 
     
-      // At this point, you have both the image file and content
-      // Perform further actions, e.g., post creation using an API
+     if (imageFile) {
       const formData = new FormData();
       formData.append('image', imageFile);
-
+     
       // Assuming you have an API endpoint to handle post creation
       await fetch("/post-profile-upload", {
         method: "POST",
@@ -79,6 +78,12 @@
         });
       });
     }
+    else if (dismiss === Swal.DismissReason.cancel) {
+      console.log("Image selected but not uploaded");
+      // Redirect to home page if "Cancel" is pressed
+      window.location.href = "/users/profile-view";
+    }
+  }
 
   // Trigger the selectImage function when the page loads
   window.onload = selectImage;

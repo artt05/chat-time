@@ -37,11 +37,12 @@
   }
 </style>
 <div class="container container-fluid p-5">
-  <div class="row justify-content-center align-items-center">
+  <div class="d-flex">
     <!-- Left Column - Profile Icon -->
     <div class="col-md-3 text-center">
         <div class="profile-container">
             <a href="/post-profile">
+              <% if(user1.profilePicture){ %>
                 <img
                     style="
                         width: 70%;
@@ -49,9 +50,16 @@
                         height: 300px;
                         object-fit: cover; /* Or use 'contain' if you don't want cropping */
                     "
-                    src="../../<%= user.profilePicture %>"
+                    src="../../<%= user1.profilePicture %>"
                     class="card-img-top"
                 />
+              <% } else { %>
+                <i class="bi bi-person-circle" style="
+                width: 70%;
+                border-radius: 50%;
+                height: 300px;
+                object-fit: cover; /* Or use 'contain' if you don't want cropping */"></i>
+                <% } %>
             </a>
         </div>
         

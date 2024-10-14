@@ -41,9 +41,26 @@
               ><i class="bi bi-plus-circle"></i><p>Create Post</p></a
             >
             
-              <a class="a-items" href="/users/profile-view"><i class="bi bi-person-circle"></i><p>Profile</p></a>
-            <a class="a-items" href="/logout"><i class="bi bi-box-arrow-left"></i><p>Logout</p></a></li>
-            
+            <a class="a-items" href="/users/profile-view">
+              <% if (user.profilePicture) { %>
+                <% if (typeof page !== 'undefined') { %> <!-- Check if 'page' is passed -->
+                  <img class="profile-image" src="./<%= user.profilePicture %>" />
+                <% } else { %>
+                  <img class="profile-image" src="../<%= user.profilePicture %>" />
+                <% } %>
+              <% } else { %>
+                <i class="bi bi-person-circle"></i>
+              <% } %>
+              <p>Profile</p>
+            </a>
+              <div class="dropdown">
+              <a class="a-items " href="#"><i class="bi bi-list"></i><p>More</p></a>
+              <div class="dropdown-content">
+                <a href="/settings">Settings</a>
+                <a href="/logout">Logout</a>
+              </div>
+              </div>
+            <!-- </div> -->
             
             
         </div>

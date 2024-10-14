@@ -49,9 +49,12 @@
 }
 .left-column {
   flex: 1;
+  background-color: black;
+  min-width: 400px;
 }
 .right-column {
   flex: 2;
+  width: 50%;
 }
 .post-image {
   width: 100%;
@@ -167,4 +170,10 @@
 }
 .content {
   margin-bottom: 0.1rem;
+}
+#swal2-html-container {
+  padding: 0;
+}
+.swal2-popup {
+  max-width: 100%;
 }

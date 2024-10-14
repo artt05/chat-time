@@ -13,6 +13,7 @@ const {
   getUserById,
   thisUser,
   IdProfileView,
+  settingsView,
 } = require("../controllers/chat.controller");
 const { protectRoute } = require("../auth/protect");
 const router = require("./auth.router");
@@ -30,5 +31,6 @@ router.get("/chat/:id", protectRoute, chatView);
 router.get("/remove-friend/:id", protectRoute, removeFriend);
 router.get("/users/profile-view", protectRoute, profileView);
 router.get("/users/profile-view/:id", protectRoute, IdProfileView);
+router.get("/settings", protectRoute, settingsView);
 
 module.exports = router;
