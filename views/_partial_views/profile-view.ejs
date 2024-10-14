@@ -7,15 +7,65 @@
     padding-left: 15%; /* Same as the width of the sidebar */
   }
   .profile-box {
-    width: 200px; /* Fixed width */
-    height: 200px; /* Fixed height */
-    padding: 10px; /* Padding inside the box */
-    margin-bottom: 20px; /* Spacing between profile pictures */
+    width: 297px; /* Fixed width */
+    height: 297px; /* Fixed height */
+    padding: 2px; /* Padding inside the box */
+    /* Spacing between profile pictures */
     overflow: hidden; /* Hide overflowing content */
+  }
+  .profile-box img {
+    transition: all 0.3s ease; /* Smooth transition */
+  }
+  .profile-box::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 293px;
+    height: 293px;
+    background-color: rgba(0, 0, 0, 0.274); /* Grey overlay with 50% opacity */
+    opacity: 0; /* Start as invisible */
+    transition: opacity 0.3s ease; /* Smooth fade effect */
+  }
+  .profile-box:hover::after {
+    opacity: 1; /* Show grey overlay on hover */
+  }
+  .profile-box:hover .zemra {
+    display: flex;
+  }
+  .koli {
+    padding: 0px;
   }
   .profile {
     margin-left: 5%;
   }
+  .zemra {
+    display: none;
+    position: absolute;
+    top: 130px;
+    left: 133px;
+    color: rgb(255, 255, 255);
+    font-size: 25px;
+    z-index: 1000;
+  }
+  .followers {
+    display: flex;
+    margin-left: 10%;
+    align-self: center;
+  }
+  .followers-content {
+   display: flex;
+   flex-direction: column;
+
+  }
+  .followers-content1 {
+   display: flex;
+   flex-direction: column;
+   justify-content: flex-start;
+   margin-left: 20px;
+
+  }
+
   @media (max-width: 768px) {
     .container-fluid {
       padding-left: 0; /* Remove left padding for smaller screens */
@@ -42,17 +92,40 @@
           class="card-img-top"
       /></a>
     </div>
+    <div class="followers">
+      <div class="followers-content">
+      
+      <p><%= user.name %></p>
+      <p><%= userPosts.length %> posts</p>
+     </div>
+     <div class="followers-content1">
+      <button class="btn" style="height: 40px;">Edit Profile</button>
+
+      <p style="margin-left:7px;"><%= user.friends.length %> followers</p>      
+     </div>
+
+    </div>
   </div>
 
   <!-- Right Column - Profile Form -->
 
   <div class="mb-3 posts">
-    <label for="profile-pictures" class="form-label">Profile Pictures:</label>
-    <div class="row">
+    <hr for="profile-pictures" class="form-label"></hr>
+    <div class="row" style="margin-left: 0px;">
       <% userPosts.forEach(function(post){ %>
 
-      <div class="col-md-4">
+      <div class="col-md-auto koli">
         <div class="profile-box">
+          <div class="zemra">
+            <% if (post.likes.includes(user.id)) { %>
+            <i class="bi bi-heart-fill"></i>
+            <% } else { %>
+            <i class="bi bi-heart"></i>
+            <% } %>
+            <p style="padding-left: 7px; font-size: 24px; font-weight: 600">
+              <%= post.likes.length %>
+            </p>
+          </div>
           <img
             style="width: 100%; height: 100%; object-fit: cover"
             src="../<%=post.image%>"

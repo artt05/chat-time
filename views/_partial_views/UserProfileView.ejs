@@ -1,31 +1,53 @@
 <%- include("../layout.ejs"); %>
 <style>
-  .container-fluid {
+  .container {
     padding-top: 20px;
     padding-right: 20px;
     padding-bottom: 20px;
-    padding-left: 20%; /* Same as the width of the sidebar */
+    padding-left: 15%; /* Same as the width of the sidebar */
   }
   .profile-box {
-    width: 200px; /* Fixed width */
-    height: 200px; /* Fixed height */
-    padding: 10px; /* Padding inside the box */
-    margin-bottom: 20px; /* Spacing between profile pictures */
+    width: 250px; /* Fixed width */
+    height: 250px; /* Fixed height */
+    padding: 2px; /* Padding inside the box */
+    /* Spacing between profile pictures */
     overflow: hidden; /* Hide overflowing content */
   }
-  .posts {
-    margin-left: 250px;
-    margin-right: 20px;
+  .profile-box img {
+    transition: all 0.3s ease; /* Smooth transition */
   }
-  .profile-container {
+  .profile-box::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 246px;
+    height: 246px;
+    background-color: rgba(0, 0, 0, 0.274); /* Grey overlay with 50% opacity */
+    opacity: 0; /* Start as invisible */
+    transition: opacity 0.3s ease; /* Smooth fade effect */
+  }
+  .profile-box:hover::after {
+    opacity: 1; /* Show grey overlay on hover */
+  }
+  .profile-box:hover .zemra {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 150px;    /* Set the desired width for the container */
-    height: 150px;   /* Set the same height to make it square */
-    overflow: hidden; /* Ensure anything outside the container is hidden */
-    border-radius: 50%;  /* Make the container a perfect circle */
-}
+  }
+  .koli {
+    padding: 0px;
+  }
+  .profile {
+    margin-left: 5%;
+  }
+  .zemra {
+    display: none;
+    position: absolute;
+    top: 100px;
+    left: 100px;
+    color: rgb(255, 255, 255);
+    font-size: 25px;
+    z-index: 1000;
+  }
 
   @media (max-width: 768px) {
     .container-fluid {
@@ -36,84 +58,74 @@
     }
   }
 </style>
-<div class="container container-fluid p-5">
+<div class="container">
   <div class="d-flex">
     <!-- Left Column - Profile Icon -->
-    <div class="col-md-3 text-center">
-        <div class="profile-container">
-            <a href="/post-profile">
-              <% if(user1.profilePicture){ %>
-                <img
-                    style="
-                        width: 70%;
-                        border-radius: 50%;
-                        height: 300px;
-                        object-fit: cover; /* Or use 'contain' if you don't want cropping */
-                    "
-                    src="../../<%= user1.profilePicture %>"
-                    class="card-img-top"
-                />
-              <% } else { %>
-                <i class="bi bi-person-circle" style="
-                width: 70%;
-                border-radius: 50%;
-                height: 300px;
-                object-fit: cover; /* Or use 'contain' if you don't want cropping */"></i>
-                <% } %>
-            </a>
-        </div>
-        
-
-      <!-- Right Column - Profile Form -->
-      
-
-          <!-- Other Fields -->
-          <!-- Add additional form fields as needed -->
-
-          <!-- Submit Button -->
-         
-       
-      </div>
-    </div>
-    <div class="mb-3 posts">
-      <label for="profile-pictures" class="form-label">Profile Pictures:</label>
-      <div class="row">
-        <% userPosts.forEach(function(post){ %>
-
-        <div class="col-md-4">
-          <div class="profile-box">
-            <img
-              style="width: 100%;     
-              height: 100%;   
-              object-fit: cover;"
-              src="../<%=post.image%>"
-              class="card-img-top"
-              alt="<%= post.user.name %>"
-            />
-          </div>
-        </div>
-        <%});%>
-      </div>
+    <div class="profile">
+      <a href="/post-profile"
+        ><img
+          style="
+            width: 137px;
+            border-radius: 50%;
+            height: 137px;
+            object-fit: cover;
+            margin-bottom: 30px;
+          "
+          src="../<%= user.profilePicture %>"
+          class="card-img-top"
+      /></a>
     </div>
   </div>
-  <script>
-    function confirmAndCallFunction() {
-      swal
-        .fire({
-          title: "Are you sure you want to delete your account?",
-          text: "You won't be able to revert this!",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: "#d33",
-          cancelButtonColor: "#3085d6",
-          confirmButtonText: "Yes, delete it!",
-        })
-        .then((result) => {
-          if (result.isConfirmed) {
-            window.location.href = "/deleteAccount";
-          }
-        });
-    }
-  </script>
-  <%- include("../alert.ejs"); %>
+
+  <!-- Right Column - Profile Form -->
+
+  <div class="mb-3 posts">
+    <label for="profile-pictures" class="form-label">Profile Pictures:</label>
+    <div class="row">
+      <% userPosts.forEach(function(post){ %>
+
+      <div class="col-md-auto koli">
+        <div class="profile-box">
+          <div class="zemra">
+            <% if (post.likes.includes(user.id)) { %>
+            <i class="bi bi-heart-fill"></i>
+            <% } else { %>
+            <i class="bi bi-heart"></i>
+            <% } %>
+            <p style="padding-left: 7px; font-size: 24px; font-weight: 600">
+              <%= post.likes.length %>
+            </p>
+          </div>
+          <img
+            style="width: 100%; height: 100%; object-fit: cover"
+            src="../<%=post.image%>"
+            class="card-img-top"
+            alt="<%= post.user.name %>"
+          />
+        </div>
+      </div>
+      <%});%>
+    </div>
+
+    <script>
+      function confirmAndCallFunction() {
+        swal
+          .fire({
+            title: "Are you sure you want to delete your account?",
+            text: "You won't be able to revert this!",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#d33",
+            cancelButtonColor: "#3085d6",
+            confirmButtonText: "Yes, delete it!",
+          })
+          .then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = "/deleteAccount";
+            }
+          });
+      }
+    </script>
+    <%- include("../alert.ejs"); %>
+  </div>
 </div>
