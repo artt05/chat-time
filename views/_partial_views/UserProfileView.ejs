@@ -92,8 +92,7 @@
   <div class="d-flex">
     <!-- Left Column - Profile Icon -->
     <div class="profile">
-      <a href="/post-profile"
-        ><img
+       <% if (user1.profilePicture) { %><img
           style="
             width: 137px;
             border-radius: 50%;
@@ -101,9 +100,15 @@
             object-fit: cover;
             margin-bottom: 30px;
           "
-          src="../<%= user.profilePicture %>"
+          src="../<%= user1.profilePicture %>"
           class="card-img-top"
-      /></a>
+      /> <% } else { %>
+        <i style="font-size: 137px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 30px;
+        color: black;" class="bi bi-person-circle"></i>
+      <% } %>
     </div>
     <div class="followers">
       <div class="followers-content">
@@ -140,7 +145,7 @@
           </div>
           <img
             style="width: 100%; height: 100%; object-fit: cover"
-            src="../<%=post.image%>"
+            src="../../<%=post.image%>"
             class="card-img-top"
             alt="<%= post.user.name %>"
           />

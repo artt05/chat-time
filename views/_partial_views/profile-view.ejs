@@ -93,7 +93,7 @@
     <!-- Left Column - Profile Icon -->
     <div class="profile">
       <a href="/post-profile"
-        ><img
+        > <% if (user.profilePicture) { %><img
           style="
             width: 137px;
             border-radius: 50%;
@@ -103,7 +103,13 @@
           "
           src="../<%= user.profilePicture %>"
           class="card-img-top"
-      /></a>
+      /> <% } else { %>
+        <i style="font-size: 137px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 30px;
+        color: black;" class="bi bi-person-circle"></i>
+      <% } %></a>
     </div>
     <div class="followers">
       <div class="followers-content">
