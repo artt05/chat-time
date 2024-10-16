@@ -12,6 +12,7 @@
     padding: 2px; /* Padding inside the box */
     /* Spacing between profile pictures */
     overflow: hidden; /* Hide overflowing content */
+    position: relative;
   }
   .profile-box img {
     transition: all 0.3s ease; /* Smooth transition */
@@ -65,14 +66,26 @@
    margin-left: 20px;
 
   }
+  .content {
+    margin-left: 0;
+  }
 
   @media (max-width: 768px) {
-    .container-fluid {
+    .container {
       padding-left: 0; /* Remove left padding for smaller screens */
+      padding-right: 0;
+      margin-bottom: 40px;
     }
     .posts {
       margin-left: 0; /* Remove left margin for smaller screens */
     }
+    .content {
+      justify-content: center;
+      width: 100%;
+    }
+  }
+  @media (max-width: 500px) {
+
   }
 </style>
 <div class="container">
@@ -111,10 +124,10 @@
 
   <div class="mb-3 posts">
     <hr for="profile-pictures" class="form-label"></hr>
-    <div class="row" style="margin-left: 0px;">
+    <div class="row content" >
       <% userPosts.forEach(function(post){ %>
 
-      <div class="col-md-auto koli">
+      <div class="col-md-fixed koli">
         <div class="profile-box">
           <div class="zemra">
             <% if (post.likes.includes(user.id)) { %>
